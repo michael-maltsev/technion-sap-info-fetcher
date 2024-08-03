@@ -6,7 +6,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from functools import cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import requests
 
@@ -531,7 +531,12 @@ def get_course_full_data(year: int, semester: int, sap_course: dict[str, Any]):
     }
 
 
-def run(year: int, semester: int, output_file: Path):
+def run(
+    year: int,
+    semester: int,
+    output_file: Path,
+    min_js_output_file: Optional[Path] = None,
+):
     result = []
 
     course_numbers = sorted(get_sap_course_numbers(year, semester))
@@ -549,11 +554,17 @@ def run(year: int, semester: int, output_file: Path):
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
+    if min_js_output_file:
+        with min_js_output_file.open("w", encoding="utf-8") as f:
+            f.write("var courses_from_rishum = ")
+            json.dump(result, f, ensure_ascii=False)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("year_and_semester")
     parser.add_argument("output_file")
+    parser.add_argument("--min-js-output-file", default=None)
     args = parser.parse_args()
 
     year_and_semester = args.year_and_semester.split("-")
@@ -567,12 +578,20 @@ def main():
         for year, semester in get_last_semesters(semester_count):
             print(f"Getting courses for year: {year}, semester: {semester}")
             output_file = Path(args.output_file.format(year=year, semester=semester))
-            run(year, semester, output_file)
+            min_js_output_file = (
+                Path(args.min_js_output_file.format(year=year, semester=semester))
+                if args.min_js_output_file
+                else None
+            )
+            run(year, semester, output_file, min_js_output_file)
     else:
         year = int(year_and_semester[0])
         semester = int(year_and_semester[1])
         output_file = Path(args.output_file)
-        run(year, semester, output_file)
+        min_js_output_file = (
+            Path(args.min_js_output_file) if args.min_js_output_file else None
+        )
+        run(year, semester, output_file, min_js_output_file)
 
     end = time.time()
     print(f"Completed in {(end - start) / 60:.2f} minutes")
