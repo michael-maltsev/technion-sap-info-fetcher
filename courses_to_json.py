@@ -326,14 +326,16 @@ def get_course_schedule(year: int, semester: int, course_number: str):
         elif len(event_id_to_group[old_id]) == 1:
             new_id = event_id_to_group[old_id][0]
             if new_id in assigned_ids.values():
-                raise RuntimeError(f"Duplicate id {new_id}: {assigned_ids}")
+                print(f"Warning: Duplicate id for {event}: {assigned_ids}")
+                new_id = old_id
             assigned_ids[old_id] = new_id
         else:
             new_id = (event["קבוצה"] // 10) * 10
             if new_id in assigned_ids.values():
                 new_id = event_id_to_group[old_id][0]
                 if new_id in assigned_ids.values():
-                    raise RuntimeError(f"Duplicate id {new_id}: {assigned_ids}")
+                    print(f"Warning: Duplicate id for {event}: {assigned_ids}")
+                    new_id = old_id
             assigned_ids[old_id] = new_id
 
         event["מס."] = new_id
