@@ -402,12 +402,9 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
         else:
             date_and_time = f"{date} {time}"
 
-        if not result:
-            result = date_and_time
-        elif result != date_and_time:
-            raise RuntimeError(f"Date and time mismatch: {result} != {date_and_time}")
+        result_items.add(date_and_time)
 
-    return result
+    return "\n".join(sorted(result_items))
 
 
 def get_course_full_data(year: int, semester: int, sap_course: dict[str, Any]):
