@@ -34,7 +34,7 @@ jobs:
           pip install requests
       - name: Generate courses
         run: |
-          python -u ./main/courses_to_json.py last-3 './gh-pages/courses_{year}_{semester}.json'
+          python -u ./main/courses_to_json.py last-1 './gh-pages/courses_{year}_{semester}.json'
       - name: Deploy
         run: |
           cd gh-pages
