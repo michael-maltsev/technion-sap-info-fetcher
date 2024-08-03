@@ -253,6 +253,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 )
             staff = staff.rstrip("\n")
 
+            event_id = raw_schedule_item["Otjid"]
+
             date_and_time_list = raw_schedule_item["ScheduleSummary"]
             if date_and_time_list != raw_schedule_item["ScheduleText"]:
                 raise RuntimeError(
@@ -301,68 +303,17 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     "בניין": building,
                     "חדר": room,
                     "מרצה/מתרגל": staff,
+                    "מס.": event_id,
                 }
 
                 if result_item not in result:
                     result.append(result_item)
 
-    has_lecture_mix = (
-        len(
-            set(x["קבוצה"] for x in result if x["סוג"] == "הרצאה")
-            & set(x["קבוצה"] for x in result if x["סוג"] != "הרצאה")
-        )
-        > 0
-    )
-
-    lectures_by_id = {}
-    for item in result:
-        if item["סוג"] != "הרצאה" or not has_lecture_mix:
-            item["מס."] = item["קבוצה"]
-            continue
-
-        item["מס."] = (item["קבוצה"] // 10) * 10
-        lectures_by_id.setdefault(item["מס."], []).append(item)
-
-    # Make sure each lecture of same id matches in all groups, and fill missing
-    # data.
-    for item in result:
-        if item["סוג"] != "הרצאה" or not has_lecture_mix:
-            continue
-
-        lectures_same_id = lectures_by_id[item["מס."]]
-        lectures_groups = set(x["קבוצה"] for x in lectures_same_id)
-        lectures_same_date_time = [
-            x
-            for x in lectures_same_id
-            if x["יום"] == item["יום"] and x["שעה"] == item["שעה"]
-        ]
-
-        if len(lectures_groups) != len(lectures_same_date_time):
-            raise RuntimeError(
-                f"Invalid number of matched lectures: {len(lectures_groups)} !="
-                f" {len(lectures_same_date_time)}"
-            )
-
-        for lecture in lectures_same_date_time:
-            if item.keys() != lecture.keys():
-                raise RuntimeError(f"Invalid keys: {item.keys()} != {lecture.keys()}")
-
-            for key in item.keys() - {"מס.", "קבוצה", "סוג", "יום", "שעה"}:
-                if item[key] == lecture[key] or not lecture[key]:
-                    continue
-
-                if not item[key]:
-                    # Copy missing value.
-                    item[key] = lecture[key]
-                    continue
-
-                raise RuntimeError(f"Invalid value: {item[key]} != {lecture[key]}")
-
     return result
 
 
 def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
-    result = ""
+    result_items = set()
 
     for exam in exam_data:
         if exam["CategoryCode"] != exam_category:
