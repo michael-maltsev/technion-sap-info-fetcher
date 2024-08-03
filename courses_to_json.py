@@ -303,73 +303,66 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     "בניין": building,
                     "חדר": room,
                     "מרצה/מתרגל": staff,
-                    "מזהה": event_id,
+                    "מס.": event_id,
                 }
 
                 if result_item not in result:
                     result.append(result_item)
 
-    has_lecture_mix = (
-        len(
-            set(x["קבוצה"] for x in result if x["סוג"] == "הרצאה")
-            & set(x["קבוצה"] for x in result if x["סוג"] != "הרצאה")
-        )
-        > 0
-    )
+    # Make ids prettier by deriving them from groups.
+    event_id_to_group = {}
+    for event in result:
+        groups = event_id_to_group.setdefault(event["מס."], [])
+        if event["קבוצה"] not in groups:
+            groups.append(event["קבוצה"])
 
-    ids_added = {}
-    lectures_by_id = {}
-    for item in result:
-        if item["סוג"] != "הרצאה" or not has_lecture_mix:
-            item["מס."] = item["קבוצה"]
+    assigned_ids_per_category = {}
+    for event in result:
+        assigned_ids = assigned_ids_per_category.setdefault(event["סוג"], {})
+        old_id = event["מס."]
+
+        if old_id in assigned_ids:
+            new_id = assigned_ids[old_id]
+        elif len(event_id_to_group[old_id]) == 1:
+            new_id = event_id_to_group[old_id][0]
+            if new_id in assigned_ids.values():
+                raise RuntimeError(f"Duplicate id {new_id}: {assigned_ids}")
+            assigned_ids[old_id] = new_id
         else:
-            item["מס."] = (item["קבוצה"] // 10) * 10
-            if item["מס."] in ids_added and ids_added[item["מס."]] != item["קבוצה"]:
-                item["מס."] = item["מזהה"]
-            lectures_by_id.setdefault(item["מס."], []).append(item)
+            new_id = (event["קבוצה"] // 10) * 10
+            if new_id in assigned_ids.values():
+                new_id = event_id_to_group[old_id][0]
+                if new_id in assigned_ids.values():
+                    raise RuntimeError(f"Duplicate id {new_id}: {assigned_ids}")
+            assigned_ids[old_id] = new_id
 
-        if item["מס."] in ids_added:
-            if ids_added[item["מס."]] != item["מזהה"]:
-                raise RuntimeError(f"Duplicate id: {item['מזהה']}")
-        else:
-            ids_added[item["מס."]] = item["מזהה"]
+        event["מס."] = new_id
 
-        del item["מזהה"]
+    # Make sure each event of same category and id matches in all groups.
+    for category in set(x["סוג"] for x in result):
+        for id in set(x["מס."] for x in result if x["סוג"] == category):
+            events_same_category_and_id = [
+                x for x in result if x["סוג"] == category and x["מס."] == id
+            ]
+            event_groups = set(x["קבוצה"] for x in events_same_category_and_id)
 
-    # Make sure each lecture of same id matches in all groups, and fill missing
-    # data.
-    for item in result:
-        if item["סוג"] != "הרצאה" or not has_lecture_mix:
-            continue
+            events_grouped = set()
+            for group in event_groups:
+                events_grouped.add(
+                    frozenset(
+                        [
+                            tuple({**x, "קבוצה": None}.items())
+                            for x in events_same_category_and_id
+                            if x["קבוצה"] == group
+                        ]
+                    )
+                )
 
-        lectures_same_id = lectures_by_id[item["מס."]]
-        lectures_groups = set(x["קבוצה"] for x in lectures_same_id)
-        lectures_same_date_time = [
-            x
-            for x in lectures_same_id
-            if x["יום"] == item["יום"] and x["שעה"] == item["שעה"]
-        ]
-
-        if len(lectures_groups) != len(lectures_same_date_time):
-            raise RuntimeError(
-                f"Invalid number of matched lectures: {len(lectures_groups)} !="
-                f" {len(lectures_same_date_time)}"
-            )
-
-        for lecture in lectures_same_date_time:
-            if item.keys() != lecture.keys():
-                raise RuntimeError(f"Invalid keys: {item.keys()} != {lecture.keys()}")
-
-            for key in item.keys() - {"מס.", "קבוצה", "סוג", "יום", "שעה"}:
-                if item[key] == lecture[key] or not lecture[key]:
-                    continue
-
-                if not item[key]:
-                    # Copy missing value.
-                    item[key] = lecture[key]
-                    continue
-
-                raise RuntimeError(f"Invalid value: {item[key]} != {lecture[key]}")
+            if len(events_grouped) != 1:
+                raise RuntimeError(
+                    f"Invalid events for category {category} and id {id}:"
+                    f" {events_grouped}"
+                )
 
     return result
 
