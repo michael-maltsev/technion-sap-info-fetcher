@@ -101,6 +101,32 @@ def send_request(query: str):
             delay = min(delay * 2, 300)
 
 
+def get_last_semesters(semester_count: int):
+    params = {
+        "sap-client": "700",
+        "$select": ",".join(
+            [
+                "PiqYear",
+                "PiqSession",
+            ]
+        ),
+        # "$inlinecount": "allpages",
+    }
+    raw_data = send_request(f"SemesterSet?{urllib.parse.urlencode(params)}")
+    raw_results = raw_data["d"]["results"]
+
+    results = []
+    for result in raw_results:
+        year = int(result["PiqYear"])
+        semester = int(result["PiqSession"])
+        if semester not in [200, 201, 202]:
+            continue
+
+        results.append((year, semester))
+
+    return sorted(results, reverse=True)[:semester_count]
+
+
 def get_sap_course_numbers(year: int, semester: int):
     params = {
         "sap-client": "700",
@@ -531,12 +557,19 @@ def main():
     if len(year_and_semester) != 2:
         raise RuntimeError(f"Invalid year_and_semester: {year_and_semester}")
 
-    year = int(year_and_semester[0])
-    semester = int(year_and_semester[1])
-
     start = time.time()
 
-    run(year, semester, Path(args.output_file))
+    if year_and_semester[0] == "last":
+        semester_count = int(year_and_semester[1])
+        for year, semester in get_last_semesters(semester_count):
+            print(f"Getting courses for year: {year}, semester: {semester}")
+            output_file = Path(args.output_file.format(year=year, semester=semester))
+            run(year, semester, output_file)
+    else:
+        year = int(year_and_semester[0])
+        semester = int(year_and_semester[1])
+        output_file = Path(args.output_file)
+        run(year, semester, output_file)
 
     end = time.time()
     print(f"Completed in {(end - start) / 60:.2f} minutes")
