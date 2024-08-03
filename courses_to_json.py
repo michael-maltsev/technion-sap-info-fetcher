@@ -316,29 +316,37 @@ def get_course_schedule(year: int, semester: int, course_number: str):
         if event["קבוצה"] not in groups:
             groups.append(event["קבוצה"])
 
-    assigned_ids_per_category = {}
+    assigned_ids = {}
+    new_ids_events = {}
     for event in result:
-        assigned_ids = assigned_ids_per_category.setdefault(event["סוג"], {})
         old_id = event["מס."]
 
         if old_id in assigned_ids:
-            new_id = assigned_ids[old_id]
-        elif len(event_id_to_group[old_id]) == 1:
+            event["מס."] = assigned_ids[old_id]
+            continue
+
+        if len(event_id_to_group[old_id]) == 1:
             new_id = event_id_to_group[old_id][0]
-            if new_id in assigned_ids.values():
-                print(f"Warning: Duplicate id for {event}: {assigned_ids}")
-                new_id = old_id
-            assigned_ids[old_id] = new_id
+            fallback_new_id = None
         else:
             new_id = (event["קבוצה"] // 10) * 10
-            if new_id in assigned_ids.values():
-                new_id = event_id_to_group[old_id][0]
-                if new_id in assigned_ids.values():
-                    print(f"Warning: Duplicate id for {event}: {assigned_ids}")
-                    new_id = old_id
-            assigned_ids[old_id] = new_id
+            fallback_new_id = event_id_to_group[old_id][0]
 
+        while new_id in assigned_ids.values() and not (
+            new_ids_events[new_id][0]["קבוצה"] == event["קבוצה"]
+            and all(x["סוג"] != event["סוג"] for x in new_ids_events[new_id])
+        ):
+            if fallback_new_id is not None:
+                new_id = fallback_new_id
+                fallback_new_id = None
+            else:
+                print(f"Warning: Duplicate id {new_id} for {event}: {assigned_ids}")
+                new_id += 100
+
+        assigned_ids[old_id] = new_id
         event["מס."] = new_id
+
+        new_ids_events.setdefault(new_id, []).append(event)
 
     # Make sure each event of same category and id matches in all groups.
     for category in set(x["סוג"] for x in result):
@@ -460,6 +468,8 @@ def get_course_full_data(year: int, semester: int, sap_course: dict[str, Any]):
             prereq += f" או "
         elif prereq_item["Operator"]:
             raise RuntimeError(f"Invalid operator: {prereq_item['Operator']}")
+    prereq = re.sub(r"\((\d+)\)", r"\1", prereq)
+    prereq = re.sub(r"^\(([^()]+)\)$", r"\1", prereq)
 
     adjoining = []
     if match := re.search(
