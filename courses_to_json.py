@@ -225,7 +225,12 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
     result = []
 
-    for raw_schedule in raw_schedule_results:
+    def raw_schedule_sort_key(raw_schedule):
+        # Sort by group id in ascending order, but place 0 groups at the end.
+        group_id = int(raw_schedule["ZzSeSeqnr"])
+        return group_id == 0, group_id
+
+    for raw_schedule in sorted(raw_schedule_results, key=raw_schedule_sort_key):
         group_id = int(raw_schedule["ZzSeSeqnr"])
 
         raw_schedule_items = raw_schedule["EObjectSet"]["results"]
