@@ -160,6 +160,7 @@ def get_sap_course(year: int, semester: int, course: str):
                 "Name",
                 "StudyContentDescription",
                 "OrgText",
+                "ZzAcademicLevel",  # Without this, ZzAcademicLevelText is wrong
                 "ZzAcademicLevelText",
                 "ZzSemesterNote",
                 "Responsible",
