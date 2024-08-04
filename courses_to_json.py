@@ -3,12 +3,18 @@ import json
 import re
 import time
 import urllib.parse
+import zlib
 from datetime import datetime, timezone
 from functools import cache
 from pathlib import Path
 from typing import Any, Optional
 
 import requests
+
+CACHE_DIR: Optional[Path] = (
+    # Path("cache")
+    None
+)
 
 session = requests.session()
 
@@ -23,6 +29,18 @@ session.proxies = {
 
 
 def send_request_once(query: str):
+    cache_file_path = None
+    if CACHE_DIR:
+        cache_key = re.sub(r"[<>:\"/\\|?*]", "_", query)[:64]
+        cache_key += '_' + f'{zlib.crc32(query.encode()) & 0xffffffff:x}'
+
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        cache_file_path = CACHE_DIR / f"{cache_key}.json"
+
+        if cache_file_path.exists():
+            with cache_file_path.open(encoding="utf-8") as f:
+                return json.load(f)
+
     print(f"Sending request: {query}")
 
     url = "https://portalex.technion.ac.il/sap/opu/odata/sap/Z_CM_EV_CDIR_DATA_SRV/$batch?sap-client=700"
@@ -87,7 +105,13 @@ MaxDataServiceVersion: 2.0
     json_str = response_chunks[2].split("\n", 1)[0]
     print(f"Got {len(json_str)} bytes")
 
-    return json.loads(json_str)
+    result = json.loads(json_str)
+
+    if cache_file_path:
+        with cache_file_path.open("w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+
+    return result
 
 
 def send_request(query: str):
