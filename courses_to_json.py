@@ -1,9 +1,9 @@
 import argparse
+import hashlib
 import json
 import re
 import time
 import urllib.parse
-import zlib
 from datetime import datetime, timezone
 from functools import cache
 from pathlib import Path
@@ -31,11 +31,11 @@ session.proxies = {
 def send_request_once(query: str):
     cache_file_path = None
     if CACHE_DIR:
-        cache_key = re.sub(r"[<>:\"/\\|?*]", "_", query)[:64]
-        cache_key += '_' + f'{zlib.crc32(query.encode()) & 0xffffffff:x}'
-
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        cache_file_path = CACHE_DIR / f"{cache_key}.json"
+
+        cache_name_prefix = re.sub(r"[<>:\"/\\|?*]", "_", query)[:64]
+        cache_hash = int.from_bytes(hashlib.sha256(query.encode()).digest()[:8], "little")
+        cache_file_path = CACHE_DIR / f"{cache_name_prefix}_{cache_hash:x}.json"
 
         if cache_file_path.exists():
             with cache_file_path.open(encoding="utf-8") as f:
