@@ -6,10 +6,14 @@ import time
 import urllib.parse
 from datetime import datetime, timezone
 from functools import cache
+from itertools import repeat
+from multiprocessing import Pool
 from pathlib import Path
 from typing import Any, Optional
 
 import requests
+
+POOL_CONCURRENT_PROCESSES = 8
 
 CACHE_DIR: Optional[Path] = (
     # Path("cache")
@@ -34,7 +38,9 @@ def send_request_once(query: str):
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
         cache_name_prefix = re.sub(r"[<>:\"/\\|?*]", "_", query)[:64]
-        cache_hash = int.from_bytes(hashlib.sha256(query.encode()).digest()[:8], "little")
+        cache_hash = int.from_bytes(
+            hashlib.sha256(query.encode()).digest()[:8], "little"
+        )
         cache_file_path = CACHE_DIR / f"{cache_name_prefix}_{cache_hash:x}.json"
 
         if cache_file_path.exists():
@@ -481,7 +487,9 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
     return "\n".join(result_items)
 
 
-def get_course_full_data(year: int, semester: int, sap_course: dict[str, Any]):
+def get_course_full_data(year: int, semester: int, course_number: str):
+    sap_course = get_sap_course(year, semester, course_number)
+
     course_number = sap_course["Otjid"]
     if course_number.startswith("SM"):
         course_number = course_number.removeprefix("SM")
@@ -607,18 +615,16 @@ def run(
     output_file: Path,
     min_js_output_file: Optional[Path] = None,
 ):
-    result = []
-
     course_numbers = sorted(get_sap_course_numbers(year, semester))
 
-    i = 0
-    for course_number in course_numbers:
-        i += 1
-        print(f"Processing {i}/{len(course_numbers)}: {course_number}")
-        result.append(
-            get_course_full_data(
-                year, semester, get_sap_course(year, semester, course_number)
-            )
+    with Pool(POOL_CONCURRENT_PROCESSES) as pool:
+        result = pool.starmap(
+            get_course_full_data,
+            zip(
+                repeat(year),
+                repeat(semester),
+                course_numbers,
+            ),
         )
 
     with output_file.open("w", encoding="utf-8") as f:
