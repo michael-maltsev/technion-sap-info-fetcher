@@ -464,7 +464,7 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
 
         time = f"{time_begin} - {time_end}"
 
-        if time == "00:00 - 00:00":
+        if exam["ZzExamOfferParentGuid"] == "" or time == "00:00 - 00:00":
             date_and_time = date
         else:
             date_and_time = f"{date} {time}"
