@@ -408,9 +408,30 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
 
 def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
-    result_items = set()
+    if len(set(x["ZzExamOfferGuid"] for x in exam_data if x["ZzExamOfferGuid"])) != len(
+        exam_data
+    ):
+        raise RuntimeError(f"Duplicate exam ids: {exam_data}")
+
+    result_items = []
+    dates_with_time = set()
 
     for exam in exam_data:
+        # Skip root items with children.
+        if exam["ZzExamOfferParentGuid"] == "":
+            if any(
+                x["ZzExamOfferParentGuid"] == exam["ZzExamOfferGuid"] for x in exam_data
+            ):
+                continue
+        else:
+            parent_exam = next(
+                x
+                for x in exam_data
+                if x["ZzExamOfferGuid"] == exam["ZzExamOfferParentGuid"]
+            )
+            if parent_exam["ZzExamOfferParentGuid"] != "":
+                raise RuntimeError(f"Invalid non-root parent exam: {parent_exam}")
+
         if exam["CategoryCode"] != exam_category:
             if exam["CategoryCode"] not in ["FI", "FB", "MI", "M2"]:
                 raise RuntimeError(f"Invalid category: {exam['CategoryCode']}")
@@ -447,10 +468,17 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
             date_and_time = date
         else:
             date_and_time = f"{date} {time}"
+            dates_with_time.add(date)
 
-        result_items.add(date_and_time)
+        result_items.append(date_and_time)
 
-    return "\n".join(sorted(result_items))
+    # Remove dates that also have items with time.
+    result_items = [x for x in result_items if x not in dates_with_time]
+
+    # Remove duplicates while keeping order.
+    result_items = list(dict.fromkeys(result_items))
+
+    return "\n".join(result_items)
 
 
 def get_course_full_data(year: int, semester: int, sap_course: dict[str, Any]):
