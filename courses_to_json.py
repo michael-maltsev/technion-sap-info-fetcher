@@ -277,16 +277,22 @@ def get_course_schedule(year: int, semester: int, course_number: str):
             building = ""
             room = 0
             building_and_room = raw_schedule_item["RoomText"]
-            if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
-                building = get_building_name(
-                    year, semester, raw_schedule_item["RoomId"]
-                )
-                room = int(match.group(2))
-            elif building_and_room == "ראה פרטים":
-                # TODO
-                print(f"Warning: Unsupported building and room: {building_and_room}")
-            elif building_and_room:
-                raise RuntimeError(f"Invalid building and room: {building_and_room}")
+            if building_and_room:
+                if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
+                    building = get_building_name(
+                        year, semester, raw_schedule_item["RoomId"]
+                    )
+                    room = int(match.group(2))
+                elif building_and_room == "ראה פרטים":
+                    if year >= 2024:
+                        print(
+                            f"Warning: [{year}/{semester}/{course_number}] Unsupported"
+                            f" building and room: {building_and_room}"
+                        )
+                else:
+                    raise RuntimeError(
+                        f"Invalid building and room: {building_and_room}"
+                    )
 
             staff = ""
             for person in raw_schedule_item["Persons"]["results"]:
@@ -308,8 +314,11 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 continue
 
             if date_and_time_list == "לֹא סָדִיר":
-                # TODO
-                print("Warning: Unsupported date and time: 'לֹא סָדִיר'")
+                if year >= 2024:
+                    print(
+                        f"Warning: [{year}/{semester}/{course_number}] Unsupported date"
+                        f" and time: {date_and_time_list}"
+                    )
                 continue
 
             # Skip specific dates like: "27.05.: 10:00-12:00".
@@ -382,7 +391,10 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 new_id = fallback_new_id
                 fallback_new_id = None
             else:
-                print(f"Warning: Duplicate id {new_id} for {event}: {assigned_ids}")
+                print(
+                    f"Warning: [{year}/{semester}/{course_number}] Duplicate id"
+                    f" {new_id} for {event}: {assigned_ids}"
+                )
                 new_id += 100
 
         assigned_ids[old_id] = new_id
