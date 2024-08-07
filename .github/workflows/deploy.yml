@@ -31,7 +31,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install requests tqdm
       - name: Generate courses
         run: |
           python -u ./main/courses_to_json.py last-2 \

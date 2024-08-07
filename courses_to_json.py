@@ -12,13 +12,16 @@ from pathlib import Path
 from typing import Any, Optional
 
 import requests
+from tqdm import tqdm
 
-POOL_CONCURRENT_PROCESSES = 8
+POOL_CONCURRENT_PROCESSES = 16
 
 CACHE_DIR: Optional[Path] = (
     # Path("cache")
     None
 )
+
+VERBOSE_LOGGING = False
 
 session = requests.session()
 
@@ -47,7 +50,8 @@ def send_request_once(query: str):
             with cache_file_path.open(encoding="utf-8") as f:
                 return json.load(f)
 
-    print(f"Sending request: {query}")
+    if VERBOSE_LOGGING:
+        print(f"Sending request: {query}")
 
     url = "https://portalex.technion.ac.il/sap/opu/odata/sap/Z_CM_EV_CDIR_DATA_SRV/$batch?sap-client=700"
 
@@ -109,7 +113,9 @@ MaxDataServiceVersion: 2.0
         raise RuntimeError(f"Invalid response: {response_chunks}")
 
     json_str = response_chunks[2].split("\n", 1)[0]
-    print(f"Got {len(json_str)} bytes")
+
+    if VERBOSE_LOGGING:
+        print(f"Got {len(json_str)} bytes")
 
     result = json.loads(json_str)
 
@@ -609,23 +615,29 @@ def get_course_full_data(year: int, semester: int, course_number: str):
     }
 
 
+def get_course_full_data_star(args):
+    return get_course_full_data(*args)
+
+
 def run(
     year: int,
     semester: int,
     output_file: Path,
     min_js_output_file: Optional[Path] = None,
 ):
+    print(f'Fetching data for {year}-{semester}...')
+
     course_numbers = sorted(get_sap_course_numbers(year, semester))
 
     with Pool(POOL_CONCURRENT_PROCESSES) as pool:
-        result = pool.starmap(
-            get_course_full_data,
+        args = list(
             zip(
                 repeat(year),
                 repeat(semester),
                 course_numbers,
-            ),
+            )
         )
+        result = list(tqdm(pool.imap(get_course_full_data_star, args), total=len(args)))
 
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
