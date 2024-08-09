@@ -437,25 +437,28 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
     ):
         raise RuntimeError(f"Duplicate exam ids: {exam_data}")
 
+    # Make sure that each item is either root or has a parent which is root,
+    # i.e. no more than one level.
+    root_exam_ids = [
+        x["ZzExamOfferGuid"] for x in exam_data if not x["ZzExamOfferParentGuid"]
+    ]
+    if any(
+        x["ZzExamOfferParentGuid"] and x["ZzExamOfferParentGuid"] not in root_exam_ids
+        for x in exam_data
+    ):
+        raise RuntimeError(f"Invalid parent exam: {exam_data}")
+
+    # Sort by the order of root exams, place root items first.
+    def exam_data_sort_key(exam):
+        id = exam["ZzExamOfferParentGuid"]
+        if not id:
+            id = exam["ZzExamOfferGuid"]
+        return root_exam_ids.index(id), exam["ZzExamOfferParentGuid"] != ""
+
     result_items = []
     dates_with_time = set()
 
-    for exam in exam_data:
-        # Skip root items with children.
-        if exam["ZzExamOfferParentGuid"] == "":
-            if any(
-                x["ZzExamOfferParentGuid"] == exam["ZzExamOfferGuid"] for x in exam_data
-            ):
-                continue
-        else:
-            parent_exam = next(
-                x
-                for x in exam_data
-                if x["ZzExamOfferGuid"] == exam["ZzExamOfferParentGuid"]
-            )
-            if parent_exam["ZzExamOfferParentGuid"] != "":
-                raise RuntimeError(f"Invalid non-root parent exam: {parent_exam}")
-
+    for exam in sorted(exam_data, key=exam_data_sort_key):
         if exam["CategoryCode"] != exam_category:
             if exam["CategoryCode"] not in ["FI", "FB", "MI", "M2"]:
                 raise RuntimeError(f"Invalid category: {exam['CategoryCode']}")
@@ -676,7 +679,6 @@ def main():
     if year_and_semester[0] == "last":
         semester_count = int(year_and_semester[1])
         for year, semester in get_last_semesters(semester_count):
-            print(f"Getting courses for year: {year}, semester: {semester}")
             output_file = Path(args.output_file.format(year=year, semester=semester))
             min_js_output_file = (
                 Path(args.min_js_output_file.format(year=year, semester=semester))
