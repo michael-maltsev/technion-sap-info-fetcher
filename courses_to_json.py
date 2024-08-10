@@ -137,6 +137,14 @@ def send_request(query: str):
             delay = min(delay * 2, 300)
 
 
+def sap_date_parse(date_str: str):
+    match = re.fullmatch(r"/Date\((\d+)\)/", date_str)
+    if not match:
+        raise RuntimeError(f"Invalid date: {date_str}")
+
+    return datetime.fromtimestamp(int(match.group(1)) / 1000, timezone.utc)
+
+
 def get_last_semesters(semester_count: int):
     params = {
         "sap-client": "700",
@@ -144,6 +152,8 @@ def get_last_semesters(semester_count: int):
             [
                 "PiqYear",
                 "PiqSession",
+                "Begda",
+                "Endda",
             ]
         ),
         # "$inlinecount": "allpages",
@@ -158,9 +168,22 @@ def get_last_semesters(semester_count: int):
         if semester not in [200, 201, 202]:
             continue
 
-        results.append((year, semester))
+        begin_date = sap_date_parse(result["Begda"]).strftime("%Y-%m-%d")
+        end_date = sap_date_parse(result["Endda"]).strftime("%Y-%m-%d")
 
-    return sorted(results, reverse=True)[:semester_count]
+        results.append(
+            {
+                "year": year,
+                "semester": semester,
+                "start": begin_date,
+                "end": end_date,
+            },
+        )
+
+    def results_sort_key(result):
+        return result["year"], result["semester"]
+
+    return sorted(results, key=results_sort_key, reverse=True)[:semester_count]
 
 
 def get_sap_course_numbers(year: int, semester: int):
@@ -468,12 +491,7 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
         if not date_raw:
             continue
 
-        match = re.fullmatch(r"/Date\((\d+)\)/", date_raw)
-        if not match:
-            raise RuntimeError(f"Invalid date: {date_raw}")
-
-        date = datetime.fromtimestamp(int(match.group(1)) / 1000, timezone.utc)
-        date = date.strftime("%d-%m-%Y")
+        date = sap_date_parse(date_raw).strftime("%d-%m-%Y")
 
         time_begin_raw = exam["ExamBegTime"]
         match = re.fullmatch(r"PT(\d\d)H(\d\d)M\d\dS", time_begin_raw)
@@ -668,6 +686,7 @@ def main():
     parser.add_argument("year_and_semester")
     parser.add_argument("output_file")
     parser.add_argument("--min-js-output-file", default=None)
+    parser.add_argument("--last-semesters-output-file", default=None)
     args = parser.parse_args()
 
     year_and_semester = args.year_and_semester.split("-")
@@ -678,7 +697,15 @@ def main():
 
     if year_and_semester[0] == "last":
         semester_count = int(year_and_semester[1])
-        for year, semester in get_last_semesters(semester_count):
+        last_semesters = get_last_semesters(semester_count)
+
+        if args.last_semesters_output_file:
+            with Path(args.last_semesters_output_file).open("w", encoding="utf-8") as f:
+                json.dump(last_semesters, f, indent=2, ensure_ascii=False)
+
+        for last_semester in last_semesters:
+            year = last_semester["year"]
+            semester = last_semester["semester"]
             output_file = Path(args.output_file.format(year=year, semester=semester))
             min_js_output_file = (
                 Path(args.min_js_output_file.format(year=year, semester=semester))
