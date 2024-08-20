@@ -382,6 +382,11 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
                 if result_item not in result:
                     result.append(result_item)
+                else:
+                    print(
+                        f"Warning: [{year}/{semester}/{course_number}] Duplicate event:"
+                        f" {result_item}"
+                    )
 
     # Make ids prettier by deriving them from groups.
     event_id_to_group = {}
