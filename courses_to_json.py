@@ -657,11 +657,47 @@ def get_course_full_data_star(args):
     return get_course_full_data(*args)
 
 
+def postprocess_2024_200(result: list[dict], output_file: Path):
+    unprocessed_file = output_file.with_stem(f"{output_file.stem}.unfiltered")
+    output_file.rename(unprocessed_file)
+
+    result = result.copy()
+    for item in result:
+        course = item["general"]["מספר מקצוע"]
+
+        # Requested to be filtered by the faculty.
+        is_math_course = course.startswith("0104") or course.startswith("0106")
+        if is_math_course:
+            schedule = []
+            for s in item["schedule"]:
+                if s["קבוצה"] in [
+                    # סינים (סטודנטים סינים שלומדים בסין).
+                    77,
+                    # לימודי חוץ. זו קבוצה פיקטיבית.
+                    69,
+                    # יש את זה רק במושגי יסוד במתמטיקה, מדובר על תוכנית אודיסאה
+                    # של תלמידי תיכון שלומדים בטכניון.
+                    40,
+                    # בינלאומי.
+                    80,
+                    86,
+                ]:
+                    continue
+                schedule.append(s)
+            item["schedule"] = schedule
+
+    with output_file.open("w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2, ensure_ascii=False)
+
+    return result
+
+
 def run(
     year: int,
     semester: int,
     output_file: Path,
     min_js_output_file: Optional[Path] = None,
+    run_postprocessing: bool = False,
 ):
     print(f'Fetching data for {year}-{semester}...')
 
@@ -680,6 +716,10 @@ def run(
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
+    if run_postprocessing:
+        if year == 2024 and semester == 200:
+            result = postprocess_2024_200(result, output_file)
+
     if min_js_output_file:
         with min_js_output_file.open("w", encoding="utf-8") as f:
             f.write("var courses_from_rishum = ")
@@ -692,6 +732,7 @@ def main():
     parser.add_argument("output_file")
     parser.add_argument("--min-js-output-file", default=None)
     parser.add_argument("--last-semesters-output-file", default=None)
+    parser.add_argument("--run-postprocessing", action="store_true")
     args = parser.parse_args()
 
     year_and_semester = args.year_and_semester.split("-")
@@ -717,7 +758,9 @@ def main():
                 if args.min_js_output_file
                 else None
             )
-            run(year, semester, output_file, min_js_output_file)
+            run(
+                year, semester, output_file, min_js_output_file, args.run_postprocessing
+            )
     else:
         year = int(year_and_semester[0])
         semester = int(year_and_semester[1])
@@ -725,7 +768,7 @@ def main():
         min_js_output_file = (
             Path(args.min_js_output_file) if args.min_js_output_file else None
         )
-        run(year, semester, output_file, min_js_output_file)
+        run(year, semester, output_file, min_js_output_file, args.run_postprocessing)
 
     end = time.time()
     print(f"Completed in {(end - start) / 60:.2f} minutes")
