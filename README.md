@@ -6,6 +6,11 @@ accessible format.
 A successor of
 [technion-ug-info-fetcher](https://github.com/michael-maltsev/technion-ug-info-fetcher).
 
+## The data
+
+The script runs on a regular basis, and the data can be found in the [gh-pages
+branch](https://github.com/michael-maltsev/technion-sap-info-fetcher/tree/gh-pages).
+
 ## Usage
 
 ```
