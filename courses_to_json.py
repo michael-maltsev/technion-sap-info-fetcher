@@ -296,6 +296,13 @@ def get_course_schedule(year: int, semester: int, course_number: str):
         raw_schedule_items = raw_schedule["EObjectSet"]["results"]
         for raw_schedule_item in raw_schedule_items:
             category = raw_schedule_item["CategoryText"]
+            is_sport_course = re.fullmatch(r'03940[89]\d\d', course_number) is not None
+            if is_sport_course:
+                if category not in ["ספורט", "נבחרת ספורט"]:
+                    raise RuntimeError(f"Invalid category: {category}")
+                category = raw_schedule_item["Name"]
+            elif category not in ["הרצאה", "תרגול", "מעבדה", "פרויקט", "סמינר"]:
+                raise RuntimeError(f"Invalid category: {category}")
 
             building = ""
             room = 0
