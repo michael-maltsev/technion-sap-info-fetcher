@@ -160,6 +160,8 @@ def get_last_semesters(semester_count: int):
     }
     raw_data = send_request(f"SemesterSet?{urllib.parse.urlencode(params)}")
     raw_results = raw_data["d"]["results"]
+    if not raw_results:
+        raise RuntimeError("No semesters found")
 
     results = []
     for result in raw_results:
