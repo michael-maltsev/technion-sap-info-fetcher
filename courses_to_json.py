@@ -353,8 +353,14 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                 continue
 
-            # Skip specific dates like: "27.05.: 10:00-12:00".
-            if re.fullmatch(r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list):
+            # Skip specific dates like:
+            # "27.05.: 10:00-12:00".
+            # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
+            if re.fullmatch(
+                r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
+            ) or re.fullmatch(
+                r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
+            ):
                 continue
 
             date_and_time_list = re.sub(r"^מ \d\d\.\d\d\., ", "", date_and_time_list)
