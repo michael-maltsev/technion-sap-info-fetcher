@@ -16,9 +16,11 @@ from tqdm import tqdm
 
 POOL_CONCURRENT_PROCESSES = 16
 
+CACHE_DIR_PATH = Path(".cache_dir")
 CACHE_DIR: Optional[Path] = (
-    # Path("cache")
-    None
+    Path(CACHE_DIR_PATH.read_text(encoding="utf-8").strip())
+    if CACHE_DIR_PATH.exists()
+    else None
 )
 
 VERBOSE_LOGGING = False
