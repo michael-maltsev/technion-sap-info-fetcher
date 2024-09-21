@@ -265,7 +265,26 @@ def get_building_name(year: int, semester: int, room_id: str):
     if not building:
         raise RuntimeError(f"Invalid building for room: {room_id}")
 
-    return building
+    building = re.sub(r"\s+", " ", building.strip())
+
+    mapping = {
+        "בנין אולמן": "אולמן",
+        "בנין בורוביץ הנדסה אזרחית": "בורוביץ הנדסה אזרחית",
+        "בנין דן קהאן": "דן קהאן",
+        "בנין הנ' אוירונאוטית": "הנ' אוירונאוטית",
+        "בנין זיסאפל": "זיסאפל",
+        "בנין להנדסת חמרים": "הנדסת חמרים",
+        "בנין ליידי דייוס - אווירו": "ליידי דייוס - אווירו",
+        "בנין ליידי דייוס - מכונות": "ליידי דייוס - מכונות",
+        "בנין למדעי המחשב": "מדעי המחשב",
+        "בנין ע'ש אמדו": "אמדו",
+        "בנין ע'ש טאוב": "טאוב",
+        "בנין ע'ש סגו": "סגו",
+        "בנין פישבך": "פישבך",
+        "בנין פקולטה לרפואה": "פקולטה לרפואה",
+    }
+
+    return mapping.get(building, building)
 
 
 def get_course_schedule(year: int, semester: int, course_number: str):
