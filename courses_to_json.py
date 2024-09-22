@@ -337,11 +337,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                     room = int(match.group(2))
                 elif building_and_room == "ראה פרטים":
-                    if year >= 2024:
-                        print(
-                            f"Warning: [{year}/{semester}/{course_number}] Unsupported"
-                            f" building and room: {building_and_room}"
-                        )
+                    # It seems to always be empty in this case.
+                    pass
                 else:
                     raise RuntimeError(
                         f"Invalid building and room: {building_and_room}"
