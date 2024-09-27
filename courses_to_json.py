@@ -346,9 +346,10 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
             staff = ""
             for person in raw_schedule_item["Persons"]["results"]:
-                staff += (
-                    f"{person['Title']} {person['FirstName']} {person['LastName']}\n"
-                )
+                title = person["Title"].strip()
+                if title and title != "-":
+                    staff += f"{title} "
+                staff += f"{person['FirstName']} {person['LastName']}\n"
             staff = staff.rstrip("\n")
 
             event_id = raw_schedule_item["Otjid"]
