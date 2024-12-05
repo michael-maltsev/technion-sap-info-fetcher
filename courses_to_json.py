@@ -147,6 +147,18 @@ def sap_date_parse(date_str: str):
     return datetime.fromtimestamp(int(match.group(1)) / 1000, timezone.utc)
 
 
+def to_new_course_number(course):
+    match = re.match(r'^9730(\d\d)$', course)
+    if match:
+        return '970300' + match.group(1)
+
+    match = re.match(r'^(\d\d\d)(\d\d\d)$', course)
+    if match:
+        return '0' + match.group(1) + '0' + match.group(2)
+
+    return course
+
+
 def get_last_semesters(semester_count: int):
     params = {
         "sap-client": "700",
@@ -623,12 +635,16 @@ def get_course_full_data(year: int, semester: int, course_number: str):
     ):
         for adjoining_course in match.group(1).split(","):
             adjoining_course = adjoining_course.strip()
-            match = re.fullmatch(r"(\d\d\d)(\d\d\d)", adjoining_course)
-            if not match:
+            if not re.fullmatch(r"\d{5,8}", adjoining_course):
                 raise RuntimeError(f"Invalid adjoining course: {adjoining_course}")
 
-            # Convert from old format, hopefully that's always correct.
-            adjoining.append(f"0{match.group(1)}0{match.group(2)}")
+            if len(adjoining_course) <= 6:
+                adjoining_course = adjoining_course.zfill(6)
+                adjoining_course = to_new_course_number(adjoining_course)
+            else:
+                adjoining_course = adjoining_course.zfill(8)
+
+            adjoining.append(adjoining_course)
 
     exam_data = sap_course["Exams"]["results"]
 
