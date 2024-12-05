@@ -508,12 +508,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                         "שישי",
                     ]
                     weekday_and_time = (days.index(day), time_begin, time_end)
-                    if weekday_and_time not in building_room_dict:
-                        raise RuntimeError(
-                            f"Missing weekday and time: {weekday_and_time}"
-                        )
-
-                    building, room = building_room_dict[weekday_and_time]
+                    building, room = building_room_dict.get(weekday_and_time, ("", 0))
 
                 result_item = {
                     "קבוצה": group_id,
