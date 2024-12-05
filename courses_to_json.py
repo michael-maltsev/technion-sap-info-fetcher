@@ -301,6 +301,85 @@ def get_building_name(year: int, semester: int, room_id: str):
     return mapping.get(building, building)
 
 
+def get_room_info(year: int, semester: int, event_schedule_id: str):
+    params = {
+        "sap-client": "700",
+        "$filter": (
+            f"Otjid eq '{event_schedule_id}' and Peryr eq '{year}' and Perid eq"
+            f" '{semester}'"
+        ),
+        "$expand": ",".join(
+            [
+                "Rooms",
+                # TODO
+                # "Persons"
+            ]
+        ),
+    }
+    raw_data = send_request(f"EventScheduleSet?{urllib.parse.urlencode(params)}")
+    results = raw_data["d"]["results"]
+
+    rooms_by_time = {}
+
+    for result in results:
+        # TODO
+        # if result["Persons"]["results"] != []:
+        #     exit(result)
+
+        date_raw = result["Evdat"]
+        begin_raw = result["Beguz"]
+        end_raw = result["Enduz"]
+        if not date_raw or not begin_raw or not end_raw:
+            raise RuntimeError(f"Missing date/time for {event_schedule_id}")
+
+        date = sap_date_parse(date_raw)
+        weekday = (date.weekday() + 1) % 7
+
+        if match := re.fullmatch(r"PT(\d\d)H(\d\d)M00S", begin_raw):
+            begin_time = f"{match.group(1)}:{match.group(2)}"
+        else:
+            raise RuntimeError(
+                f"Invalid begin time for {event_schedule_id}: {begin_raw}"
+            )
+
+        if match := re.fullmatch(r"PT(\d\d)H(\d\d)M00S", end_raw):
+            end_time = f"{match.group(1)}:{match.group(2)}"
+        else:
+            raise RuntimeError(f"Invalid end time for {event_schedule_id}: {end_raw}")
+
+        weekday_and_time = (weekday, begin_time, end_time)
+
+        rooms = result["Rooms"]["results"]
+
+        buildings = set()
+        room_numbers = set()
+        for room in rooms:
+            room_id = room["Otjid"]
+            room_name = room["Name"]
+
+            if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", room_name):
+                building = get_building_name(year, semester, room_id)
+                room_number = int(match.group(2))
+                buildings.add(building)
+                room_numbers.add(room_number)
+            else:
+                raise RuntimeError(
+                    f"Invalid room name for {event_schedule_id}: {room_name}"
+                )
+
+        if len(buildings) != 1:
+            continue
+
+        building = buildings.pop()
+        room_number = room_numbers.pop() if len(room_numbers) == 1 else 0
+
+        building_and_room = (building, room_number)
+
+        rooms_by_time[weekday_and_time] = building_and_room
+
+    return rooms_by_time
+
+
 def get_course_schedule(year: int, semester: int, course_number: str):
     params = {
         "sap-client": "700",
@@ -341,6 +420,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
             building = ""
             room = 0
+            building_room_dict = None
             building_and_room = raw_schedule_item["RoomText"]
             if building_and_room:
                 if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
@@ -349,8 +429,9 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                     room = int(match.group(2))
                 elif building_and_room == "ראה פרטים":
-                    # It seems to always be empty in this case.
-                    pass
+                    building_room_dict = get_room_info(
+                        year, semester, raw_schedule_item["Otjid"]
+                    )
                 else:
                     raise RuntimeError(
                         f"Invalid building and room: {building_and_room}"
@@ -413,7 +494,26 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
                 day = match.group(1)
                 day = "ראשון" if day == "רִאשׁוֹ" else day
-                time = match.group(2) + " - " + match.group(3)
+                time_begin = match.group(2)
+                time_end = match.group(3)
+                time = f"{time_begin} - {time_end}"
+
+                if building_room_dict:
+                    days = [
+                        "ראשון",
+                        "שני",
+                        "שלישי",
+                        "רביעי",
+                        "חמישי",
+                        "שישי",
+                    ]
+                    weekday_and_time = (days.index(day), time_begin, time_end)
+                    if weekday_and_time not in building_room_dict:
+                        raise RuntimeError(
+                            f"Missing weekday and time: {weekday_and_time}"
+                        )
+
+                    building, room = building_room_dict[weekday_and_time]
 
                 result_item = {
                     "קבוצה": group_id,
