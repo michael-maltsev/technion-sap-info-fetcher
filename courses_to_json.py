@@ -704,7 +704,11 @@ def get_course_full_data(year: int, semester: int, course_number: str):
 
 
 def get_course_full_data_star(args):
-    return get_course_full_data(*args)
+    try:
+        return get_course_full_data(*args)
+    except Exception:
+        print(f"Failed to get course data for {args}")
+        raise
 
 
 def postprocess_2024_200(result: list[dict], output_file: Path):
