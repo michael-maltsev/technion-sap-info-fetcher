@@ -296,6 +296,8 @@ def get_building_name(year: int, semester: int, room_id: str):
         "בנין ע'ש סגו": "סגו",
         "בנין פישבך": "פישבך",
         "בנין פקולטה לרפואה": "פקולטה לרפואה",
+        "בניין ננו-אלקטרוניקה": "ננו-אלקטרוניקה",
+        "בניין ספורט": "ספורט",
     }
 
     return mapping.get(building, building)
