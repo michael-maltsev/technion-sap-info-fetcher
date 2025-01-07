@@ -288,8 +288,7 @@ def get_building_name(year: int, semester: int, room_id: str):
         "בנין הנ' אוירונאוטית": "הנ' אוירונאוטית",
         "בנין זיסאפל": "זיסאפל",
         "בנין להנדסת חמרים": "הנדסת חמרים",
-        "בנין ליידי דייוס - אווירו": "ליידי דייוס - אווירו",
-        "בנין ליידי דייוס - מכונות": "ליידי דייוס - מכונות",
+        "בנין ליידי דייוס": "ליידי דייוס",
         "בנין למדעי המחשב": "מדעי המחשב",
         "בנין ע'ש אמדו": "אמדו",
         "בנין ע'ש טאוב": "טאוב",
@@ -300,7 +299,11 @@ def get_building_name(year: int, semester: int, room_id: str):
         "בניין ספורט": "ספורט",
     }
 
-    return mapping.get(building, building)
+    for prefix_from, prefix_to in mapping.items():
+        if building.startswith(prefix_from):
+            return prefix_to + building[len(prefix_from) :]
+
+    return building
 
 
 def get_room_info(year: int, semester: int, event_schedule_id: str):
