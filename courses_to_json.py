@@ -420,6 +420,13 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 if category not in ["ספורט", "נבחרת ספורט"]:
                     raise RuntimeError(f"Invalid category: {category}")
                 category = raw_schedule_item["Name"]
+            # Temporary special case.
+            elif (
+                course_number == "00950219"
+                and category == ""
+                and raw_schedule_item["Name"].startswith("תרגיל")
+            ):
+                category = "תרגול"
             elif category not in ["הרצאה", "תרגול", "מעבדה", "פרויקט", "סמינר"]:
                 raise RuntimeError(f"Invalid category: {category}")
 
