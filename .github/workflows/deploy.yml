@@ -35,7 +35,7 @@ jobs:
           pip install requests tqdm
       - name: Generate courses
         run: |
-          python -u ./main/courses_to_json.py last-2 \
+          python -u ./main/courses_to_json.py last-3 \
             './gh-pages/courses_{year}_{semester}.json' \
             --min-js-output-file='./gh-pages/courses_{year}_{semester}.min.js' \
             --last-semesters-output-file './gh-pages/last_semesters.json' \
