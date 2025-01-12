@@ -818,7 +818,7 @@ def get_course_full_data_star(args):
         raise
 
 
-def postprocess_2024_200(result: list[dict], output_file: Path):
+def postprocess_2024_200_201(result: list[dict], output_file: Path):
     unprocessed_file = output_file.with_stem(f"{output_file.stem}.unfiltered")
     output_file.rename(unprocessed_file)
 
@@ -878,8 +878,8 @@ def run(
         json.dump(result, f, indent=2, ensure_ascii=False)
 
     if run_postprocessing:
-        if year == 2024 and semester == 200:
-            result = postprocess_2024_200(result, output_file)
+        if year == 2024 and semester in [200, 201]:
+            result = postprocess_2024_200_201(result, output_file)
 
     if min_js_output_file:
         with min_js_output_file.open("w", encoding="utf-8") as f:
