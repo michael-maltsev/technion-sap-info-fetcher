@@ -426,7 +426,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     category.startswith("ספורט חינוך גופני - ")
                     or category == "ספורט נבחרות ספורט"
                 ) and raw_schedule["Name"]:
-                    category = raw_schedule["Name"]
+                    category = re.sub(r'^SE\d+\s*', '', raw_schedule["Name"])
             # Temporary special case.
             elif (
                 course_number == "00950219"
@@ -477,6 +477,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 continue
 
             if date_and_time_list == "לֹא סָדִיר":
+                # TODO: handle, example:
+                # https://portalex.technion.ac.il/ovv/?sap-theme=sap_belize&sap-language=HE&sap-ui-language=HE#/details/2024/200/SM/01140077
                 if year >= 2024:
                     print(
                         f"Warning: [{year}/{semester}/{course_number}] Unsupported date"
