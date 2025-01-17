@@ -525,6 +525,16 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 time_end = match.group(3)
                 time = f"{time_begin} - {time_end}"
 
+                # Temporary workaround for a buggy schedule entry.
+                if (
+                    year == 2024
+                    and semester == 201
+                    and course_number == "03940806"
+                    and time_begin == "00:01"
+                    and time_end == "00:02"
+                ):
+                    continue
+
                 if building_room_dict:
                     days = [
                         "ראשון",
