@@ -426,7 +426,13 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     category.startswith("ספורט חינוך גופני - ")
                     or category == "ספורט נבחרות ספורט"
                 ) and raw_schedule["Name"]:
-                    category = re.sub(r'^SE\d+\s*', '', raw_schedule["Name"])
+                    category = raw_schedule["Name"]
+                    category = re.sub(r'^SE\d+\s*', '', category)
+                    category = re.sub(
+                        r'\s*-\s*0*' + re.escape(course_number.lstrip('0')) + r'$',
+                        '',
+                        category,
+                    )
             # Temporary special case.
             elif (
                 course_number == "00950219"
