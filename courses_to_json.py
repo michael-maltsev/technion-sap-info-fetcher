@@ -435,7 +435,9 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
             # Temporary special case.
             elif (
-                course_number == "00950219"
+                year == 2024
+                and semester == 201
+                and course_number == "00950219"
                 and category == ""
                 and raw_schedule_item["Name"].startswith("תרגיל")
             ):
