@@ -148,13 +148,13 @@ def sap_date_parse(date_str: str):
 
 
 def to_new_course_number(course):
-    match = re.match(r'^9730(\d\d)$', course)
+    match = re.match(r"^9730(\d\d)$", course)
     if match:
-        return '970300' + match.group(1)
+        return "970300" + match.group(1)
 
-    match = re.match(r'^(\d\d\d)(\d\d\d)$', course)
+    match = re.match(r"^(\d\d\d)(\d\d\d)$", course)
     if match:
-        return '0' + match.group(1) + '0' + match.group(2)
+        return "0" + match.group(1) + "0" + match.group(2)
 
     return course
 
@@ -415,7 +415,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
         raw_schedule_items = raw_schedule["EObjectSet"]["results"]
         for raw_schedule_item in raw_schedule_items:
             category = raw_schedule_item["CategoryText"]
-            is_sport_course = re.fullmatch(r'03940[89]\d\d', course_number) is not None
+            is_sport_course = re.fullmatch(r"03940[89]\d\d", course_number) is not None
             if is_sport_course:
                 if category not in ["ספורט", "נבחרת ספורט"]:
                     raise RuntimeError(f"Invalid category: {category}")
@@ -427,10 +427,10 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     or category == "ספורט נבחרות ספורט"
                 ) and raw_schedule["Name"]:
                     category = raw_schedule["Name"]
-                    category = re.sub(r'^SE\d+\s*', '', category)
+                    category = re.sub(r"^SE\d+\s*", "", category)
                     category = re.sub(
-                        r'\s*-\s*0*' + re.escape(course_number.lstrip('0')) + r'$',
-                        '',
+                        r"\s*-\s*0*" + re.escape(course_number.lstrip("0")) + r"$",
+                        "",
                         category,
                     )
             # Temporary special case.
@@ -887,7 +887,7 @@ def run(
     min_js_output_file: Optional[Path] = None,
     run_postprocessing: bool = False,
 ):
-    print(f'Fetching data for {year}-{semester}...')
+    print(f"Fetching data for {year}-{semester}...")
 
     course_numbers = sorted(get_sap_course_numbers(year, semester))
 
