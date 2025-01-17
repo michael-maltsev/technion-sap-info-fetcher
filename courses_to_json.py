@@ -423,16 +423,14 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 # Sometimes the item name is generic and the schedule group item
                 # is more descriptive.
                 if (
-                    category.startswith("ספורט חינוך גופני - ")
+                    re.match(r"ספורט חינוך גופני\s*-", category)
                     or category == "ספורט נבחרות ספורט"
-                ) and raw_schedule["Name"]:
-                    category = raw_schedule["Name"]
-                    category = re.sub(r"^SE\d+\s*", "", category)
-                    category = re.sub(
-                        r"\s*-\s*0*" + re.escape(course_number.lstrip("0")) + r"$",
-                        "",
+                    or re.search(
+                        r"-\s*0*" + re.escape(course_number.lstrip("0")) + r"$",
                         category,
                     )
+                ) and raw_schedule["Name"]:
+                    category = re.sub(r"^SE\d+\s*", "", raw_schedule["Name"])
             # Temporary special case.
             elif (
                 year == 2024
