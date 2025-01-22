@@ -15,6 +15,7 @@ import requests
 from tqdm import tqdm
 
 POOL_CONCURRENT_PROCESSES = 16
+REQUEST_TIMEOUT = 60
 
 CACHE_DIR_PATH = Path(".cache_dir")
 CACHE_DIR: Optional[Path] = (
@@ -106,7 +107,7 @@ MaxDataServiceVersion: 2.0
 """
     data = data.replace("\n", "\r\n")
 
-    response = session.post(url, headers=headers, data=data)
+    response = session.post(url, headers=headers, data=data, timeout=REQUEST_TIMEOUT)
     if response.status_code != 202:
         raise RuntimeError(f"Bad status code: {response.status_code}, expected 202")
 
