@@ -160,7 +160,7 @@ def to_new_course_number(course):
     return course
 
 
-def get_last_semesters(semester_count: int):
+def get_last_semesters():
     params = {
         "sap-client": "700",
         "$select": ",".join(
@@ -200,7 +200,7 @@ def get_last_semesters(semester_count: int):
     def results_sort_key(result):
         return result["year"], result["semester"]
 
-    return sorted(results, key=results_sort_key, reverse=True)[:semester_count]
+    return sorted(results, key=results_sort_key, reverse=True)
 
 
 def get_sap_course_numbers(year: int, semester: int):
@@ -929,8 +929,16 @@ def main():
     start = time.time()
 
     if year_and_semester[0] == "last":
+        last_semesters = get_last_semesters()
+
+        # Sometimes, only a single old semester is returned for some reason.
+        if len(last_semesters) < 3:
+            raise RuntimeError(
+                f"Expected at least 3 semesters, got {len(last_semesters)}"
+            )
+
         semester_count = int(year_and_semester[1])
-        last_semesters = get_last_semesters(semester_count)
+        last_semesters = last_semesters[:semester_count]
 
         if args.last_semesters_output_file:
             with Path(args.last_semesters_output_file).open("w", encoding="utf-8") as f:
