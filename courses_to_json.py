@@ -710,6 +710,66 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
     return "\n".join(result_items)
 
 
+def get_adjoining_courses(semester_notes: str):
+    parts = re.split(
+        r"^(?:מקצוע צמוד|מקצועות צמודים):",
+        semester_notes,
+        maxsplit=1,
+        flags=re.MULTILINE,
+    )
+    if len(parts) == 1:
+        return []
+
+    p = r"מקצוע צמוד|מקצועות צמודים"
+
+    if re.search(p, parts[0]):
+        raise RuntimeError(f"Unedpected adjoint content: {parts[0]}")
+
+    if re.search(p, parts[1]):
+        raise RuntimeError(f"Unedpected adjoint content: {parts[1]}")
+
+    content = parts[1].strip()
+
+    courses = []
+
+    if match := re.match(r"\d{5,8}(\s*,\s*\d{5,8})*$", content, flags=re.MULTILINE):
+        courses = [x.strip() for x in match.group(0).split(",")]
+    elif match := re.match(r"(.*?)(?:\.$|\.\n|\n\n|$)", content, flags=re.DOTALL):
+        for adjoining_course in match.group(1).split(","):
+            adjoining_course = adjoining_course.strip()
+
+            # A course number, possibly followed by the course name.
+            match = re.fullmatch(r"(\d{5,8})(\s.*)?", adjoining_course)
+            if not match:
+                raise RuntimeError(f"Invalid adjoining course: {adjoining_course}")
+
+            adjoining_course_number = match.group(1)
+            adjoining_course_name = match.group(2)
+
+            if adjoining_course_name and re.search(r"\d{5,8}", adjoining_course_name):
+                raise RuntimeError(
+                    "Adjoining course name contains a course number:"
+                    f" {adjoining_course_name}"
+                )
+
+            courses.append(adjoining_course_number)
+    else:
+        raise RuntimeError(f"Unsupported adjoint content: {content}")
+
+    result = []
+
+    for course in courses:
+        if len(course) <= 6:
+            course = course.zfill(6)
+            course = to_new_course_number(course)
+        else:
+            course = course.zfill(8)
+
+        result.append(course)
+
+    return result
+
+
 def get_course_full_data(year: int, semester: int, course_number: str):
     sap_course = get_sap_course(year, semester, course_number)
 
@@ -760,24 +820,7 @@ def get_course_full_data(year: int, semester: int, course_number: str):
     prereq = re.sub(r"\((\d+)\)", r"\1", prereq)
     prereq = re.sub(r"^\(([^()]+)\)$", r"\1", prereq)
 
-    adjoining = []
-    if match := re.search(
-        r"^(?:מקצוע צמוד|מקצועות צמודים):(.*)",
-        sap_course["ZzSemesterNote"],
-        flags=re.MULTILINE,
-    ):
-        for adjoining_course in match.group(1).split(","):
-            adjoining_course = adjoining_course.strip()
-            if not re.fullmatch(r"\d{5,8}", adjoining_course):
-                raise RuntimeError(f"Invalid adjoining course: {adjoining_course}")
-
-            if len(adjoining_course) <= 6:
-                adjoining_course = adjoining_course.zfill(6)
-                adjoining_course = to_new_course_number(adjoining_course)
-            else:
-                adjoining_course = adjoining_course.zfill(8)
-
-            adjoining.append(adjoining_course)
+    adjoining = get_adjoining_courses(sap_course["ZzSemesterNote"])
 
     exam_data = sap_course["Exams"]["results"]
 
