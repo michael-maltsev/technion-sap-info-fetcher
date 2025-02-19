@@ -723,10 +723,10 @@ def get_adjoining_courses(semester_notes: str):
     p = r"מקצוע צמוד|מקצועות צמודים"
 
     if re.search(p, parts[0]):
-        raise RuntimeError(f"Unedpected adjoint content: {parts[0]}")
+        raise RuntimeError(f"Unexpected adjoint content: {parts[0]}")
 
     if re.search(p, parts[1]):
-        raise RuntimeError(f"Unedpected adjoint content: {parts[1]}")
+        raise RuntimeError(f"Unexpected adjoint content: {parts[1]}")
 
     content = parts[1].strip()
 
