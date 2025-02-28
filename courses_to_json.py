@@ -943,6 +943,8 @@ def run(
         )
         result = list(tqdm(pool.imap(get_course_full_data_star, args), total=len(args)))
 
+    all_schedules_missing = all(len(x["schedule"]) == 0 for x in result)
+
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
 
@@ -954,6 +956,10 @@ def run(
         with min_js_output_file.open("w", encoding="utf-8") as f:
             f.write("var courses_from_rishum = ")
             json.dump(result, f, ensure_ascii=False)
+
+    return {
+        "all_schedules_missing": all_schedules_missing,
+    }
 
 
 def main():
@@ -987,6 +993,8 @@ def main():
             with Path(args.last_semesters_output_file).open("w", encoding="utf-8") as f:
                 json.dump(last_semesters, f, indent=2, ensure_ascii=False)
 
+        results = []
+
         for last_semester in last_semesters:
             year = last_semester["year"]
             semester = last_semester["semester"]
@@ -996,9 +1004,15 @@ def main():
                 if args.min_js_output_file
                 else None
             )
-            run(
+            result = run(
                 year, semester, output_file, min_js_output_file, args.run_postprocessing
             )
+            results.append(result)
+
+        # If all semesters are missing, probably something is wrong with the
+        # server, raise an error.
+        if all(result["all_schedules_missing"] for result in results):
+            raise RuntimeError("All schedules are missing")
     else:
         year = int(year_and_semester[0])
         semester = int(year_and_semester[1])
