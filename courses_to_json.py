@@ -512,6 +512,15 @@ def get_course_schedule(year: int, semester: int, course_number: str):
             date_and_time_list = re.sub(r", הכל \d+ ימים$", "", date_and_time_list)
             date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
             for date_and_time in date_and_time_list:
+                # Temporary workaround for a buggy schedule entry.
+                if (
+                    year == 2024
+                    and semester == 201
+                    and course_number in ["03940806", "03940820"]
+                    and re.fullmatch(r"יום \S+" r" 00:0\d-00:0\d", date_and_time)
+                ):
+                    continue
+
                 match = re.fullmatch(
                     r"(?:יום|יוֹם) (רִאשׁוֹ|שני|שלישי|רביעי|חמישי|שישי)"
                     r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
@@ -525,16 +534,6 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 time_begin = match.group(2)
                 time_end = match.group(3)
                 time = f"{time_begin} - {time_end}"
-
-                # Temporary workaround for a buggy schedule entry.
-                if (
-                    year == 2024
-                    and semester == 201
-                    and course_number == "03940806"
-                    and time_begin == "00:01"
-                    and time_end == "00:02"
-                ):
-                    continue
 
                 if building_room_dict:
                     days = [
