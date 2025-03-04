@@ -516,9 +516,12 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 if (
                     year == 2024
                     and semester == 201
-                    and course_number in ["03940806", "03940820"]
-                    and re.fullmatch(r"יום \S+" r" 00:0\d-00:0\d", date_and_time)
+                    and re.fullmatch(r"יום \S+" r" 00:0[012]-00:0[012]", date_and_time)
                 ):
+                    print(
+                        f"Warning: [{year}/{semester}/{course_number}] Buggy date and"
+                        f" time: {date_and_time}"
+                    )
                     continue
 
                 match = re.fullmatch(
