@@ -258,7 +258,7 @@ def get_sap_course(year: int, semester: int, course: str):
     raw_data = send_request(f"SmObjectSet?{urllib.parse.urlencode(params)}")
     results = raw_data["d"]["results"]
     if len(results) != 1:
-        raise RuntimeError(f"Invalid results for {course}: {results}")
+        raise RuntimeError(f"Invalid results for {course}: {raw_data}")
 
     return results[0]
 
