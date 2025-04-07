@@ -38,7 +38,7 @@ session.proxies = {
 }
 
 
-def send_request_once(query: str):
+def send_request_once(query: str, allow_empty: bool):
     cache_file_path = None
     if CACHE_DIR:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -122,6 +122,9 @@ MaxDataServiceVersion: 2.0
 
     result = json.loads(json_str)
 
+    if not allow_empty and result == {"d": {"results": []}}:
+        raise RuntimeError("Empty response")
+
     if cache_file_path:
         with cache_file_path.open("w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
@@ -129,13 +132,13 @@ MaxDataServiceVersion: 2.0
     return result
 
 
-def send_request(query: str):
+def send_request(query: str, allow_empty=False):
     delay = 5
     while True:
         try:
-            return send_request_once(query)
+            return send_request_once(query, allow_empty)
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error: {e} for {query}")
             time.sleep(delay)
             delay = min(delay * 2, 300)
 
@@ -397,7 +400,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
         ),
     }
     raw_data = send_request(
-        f"SmObjectSet(Otjid='SM{course_number}',Peryr='{year}',Perid='{semester}',ZzCgOtjid='',ZzPoVersion='',ZzScOtjid='')/SeObjectSet?{urllib.parse.urlencode(params)}"
+        f"SmObjectSet(Otjid='SM{course_number}',Peryr='{year}',Perid='{semester}',ZzCgOtjid='',ZzPoVersion='',ZzScOtjid='')/SeObjectSet?{urllib.parse.urlencode(params)}",
+        allow_empty=True,
     )
     raw_schedule_results = raw_data["d"]["results"]
     if len(raw_schedule_results) == 0:
