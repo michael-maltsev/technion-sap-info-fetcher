@@ -487,7 +487,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
             if not date_and_time_list:
                 continue
 
-            if date_and_time_list == "לֹא סָדִיר":
+            if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
                 # TODO: handle, example:
                 # https://portalex.technion.ac.il/ovv/?sap-theme=sap_belize&sap-language=HE&sap-ui-language=HE#/details/2024/200/SM/01140077
                 if year >= 2024:
@@ -529,7 +529,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     continue
 
                 match = re.fullmatch(
-                    r"(?:יום|יוֹם) (רִאשׁוֹ|שני|שלישי|רביעי|חמישי|שישי)"
+                    r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי)"
                     r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
                     date_and_time,
                 )
