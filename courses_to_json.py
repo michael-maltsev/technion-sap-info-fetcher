@@ -517,11 +517,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
             date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
             for date_and_time in date_and_time_list:
                 # Temporary workaround for a buggy schedule entry.
-                if (
-                    year == 2024
-                    and semester == 201
-                    and re.fullmatch(r"יום \S+" r" 00:0[012]-00:0[012]", date_and_time)
-                ):
+                if re.fullmatch(r"יום \S+" r" 00:0\d-00:0\d", date_and_time):
                     print(
                         f"Warning: [{year}/{semester}/{course_number}] Buggy date and"
                         f" time: {date_and_time}"
