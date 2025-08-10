@@ -3,6 +3,7 @@ import hashlib
 import json
 import re
 import time
+import typing
 import urllib.parse
 from datetime import datetime, timezone
 from functools import cache
@@ -664,8 +665,17 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
             id = exam["ZzExamOfferGuid"]
         return root_exam_ids.index(id), exam["ZzExamOfferParentGuid"] != ""
 
-    result_items = []
-    dates_with_time = set()
+    class ExamDate(typing.NamedTuple):
+        date: str
+        notes: str
+
+    class ExamDateTime(typing.NamedTuple):
+        date: str
+        time: str
+        notes: str
+
+    result_items: list[ExamDateTime] = []
+    dates_with_time: set[ExamDate] = set()
 
     for exam in sorted(exam_data, key=exam_data_sort_key):
         if exam["CategoryCode"] != exam_category:
@@ -693,23 +703,41 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
 
         time_end = match.group(1) + ":" + match.group(2)
 
+        notes = exam["ZzSeComment"]
+
         time = f"{time_begin} - {time_end}"
-
         if exam["ZzExamOfferParentGuid"] == "" or time == "00:00 - 00:00":
-            date_and_time = date
-        else:
-            date_and_time = f"{date} {time}"
-            dates_with_time.add(date)
+            time = ""
 
-        result_items.append(date_and_time)
+        if time:
+            dates_with_time.add(ExamDate(date=date, notes=notes))
+
+        result_items.append(ExamDateTime(date=date, time=time, notes=notes))
 
     # Remove dates that also have items with time.
-    result_items = [x for x in result_items if x not in dates_with_time]
+    result_items = [
+        x
+        for x in result_items
+        if x.time or ExamDate(date=x.date, notes=x.notes) not in dates_with_time
+    ]
 
     # Remove duplicates while keeping order.
     result_items = list(dict.fromkeys(result_items))
 
-    return "\n".join(result_items)
+    # Move items without notes to top.
+    result_items.sort(key=lambda x: not x.notes, reverse=True)
+
+    # Format.
+    result_strings = []
+    for result_item in result_items:
+        result_string = result_item.date
+        if result_item.time:
+            result_string += f" {result_item.time}"
+        if result_item.notes:
+            result_string += f" ({result_item.notes})"
+        result_strings.append(result_string)
+
+    return "\n".join(result_strings)
 
 
 def get_adjoining_courses(semester_notes: str):
