@@ -764,6 +764,8 @@ def get_adjoining_courses(semester_notes: str):
 
     if match := re.match(r"\d{5,8}(\s*,\s*\d{5,8})*$", content, flags=re.MULTILINE):
         courses = [x.strip() for x in match.group(0).split(",")]
+    elif match := re.match(r"\d{5,8}(\s+או\s+\d{5,8})+$", content, flags=re.MULTILINE):
+        courses = [x.strip() for x in match.group(0).split("או")]
     elif match := re.match(r"(.*?)(?:\.$|\.\n|\n\n|$)", content, flags=re.DOTALL):
         for adjoining_course in match.group(1).split(","):
             adjoining_course = adjoining_course.strip()
