@@ -5,6 +5,7 @@ import re
 import time
 import typing
 import urllib.parse
+from collections import defaultdict
 from datetime import datetime, timezone
 from functools import cache
 from itertools import repeat
@@ -311,7 +312,7 @@ def get_building_name(year: int, semester: int, room_id: str):
     return building
 
 
-def get_room_info(year: int, semester: int, event_schedule_id: str):
+def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
     params = {
         "sap-client": "700",
         "$filter": (
@@ -329,6 +330,7 @@ def get_room_info(year: int, semester: int, event_schedule_id: str):
     raw_data = send_request(f"EventScheduleSet?{urllib.parse.urlencode(params)}")
     results = raw_data["d"]["results"]
 
+    weekday_and_time_histogram = defaultdict(int)
     rooms_by_time = {}
 
     for result in results:
@@ -358,6 +360,7 @@ def get_room_info(year: int, semester: int, event_schedule_id: str):
             raise RuntimeError(f"Invalid end time for {event_schedule_id}: {end_raw}")
 
         weekday_and_time = (weekday, begin_time, end_time)
+        weekday_and_time_histogram[weekday_and_time] += 1
 
         rooms = result["Rooms"]["results"]
 
@@ -387,7 +390,18 @@ def get_room_info(year: int, semester: int, event_schedule_id: str):
 
         rooms_by_time[weekday_and_time] = building_and_room
 
-    return rooms_by_time
+    # Keep times that appear more than half the average number of times.
+    weekday_and_time_min_count = (13 if semester != 202 else 7) / 2
+    weekday_and_time_list = [
+        x
+        for x, count in weekday_and_time_histogram.items()
+        if count > weekday_and_time_min_count
+    ]
+
+    return {
+        'rooms_by_time': rooms_by_time,
+        'weekday_and_time_list': weekday_and_time_list,
+    }
 
 
 def get_course_schedule(year: int, semester: int, course_number: str):
@@ -451,6 +465,7 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
             building = ""
             room = 0
+            event_schedule_info = None
             building_room_dict = None
             building_and_room = raw_schedule_item["RoomText"]
             if building_and_room:
@@ -460,9 +475,11 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                     room = int(match.group(2))
                 elif building_and_room == "ראה פרטים":
-                    building_room_dict = get_room_info(
-                        year, semester, raw_schedule_item["Otjid"]
-                    )
+                    if not event_schedule_info:
+                        event_schedule_info = get_event_schedule_info(
+                            year, semester, raw_schedule_item["Otjid"]
+                        )
+                    building_room_dict = event_schedule_info['rooms_by_time']
                 else:
                     raise RuntimeError(
                         f"Invalid building and room: {building_and_room}"
@@ -489,57 +506,43 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 continue
 
             if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
-                # TODO: handle, example:
-                # https://portalex.technion.ac.il/ovv/?sap-theme=sap_belize&sap-language=HE&sap-ui-language=HE#/details/2024/200/SM/01140077
-                if year >= 2024:
-                    print(
-                        f"Warning: [{year}/{semester}/{course_number}] Unsupported date"
-                        f" and time: {date_and_time_list}"
+                if not event_schedule_info:
+                    event_schedule_info = get_event_schedule_info(
+                        year, semester, raw_schedule_item["Otjid"]
                     )
-                continue
-
-            # Skip specific dates like:
-            # "27.05.: 10:00-12:00".
-            # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
-            if re.fullmatch(
-                r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
-            ) or re.fullmatch(
-                r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
-            ):
-                continue
-
-            date_and_time_list = re.sub(r"^מ \d\d\.\d\d\., ", "", date_and_time_list)
-            date_and_time_list = re.sub(r"^עד \d\d\.\d\d\., ", "", date_and_time_list)
-            date_and_time_list = re.sub(
-                r"^\d\d\.\d\d\. עד \d\d\.\d\d\., ", "", date_and_time_list
-            )
-            date_and_time_list = re.sub(r", יוצא מן הכלל: .*$", "", date_and_time_list)
-            date_and_time_list = re.sub(r", הכל \d+ ימים$", "", date_and_time_list)
-            date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
-            for date_and_time in date_and_time_list:
-                # Temporary workaround for a buggy schedule entry.
-                if re.fullmatch(r"יום \S+ (00:0\d-00:0\d|00:0[1-9]-01:00)", date_and_time):
-                    print(
-                        f"Warning: [{year}/{semester}/{course_number}] Buggy date and"
-                        f" time: {date_and_time}"
-                    )
+                date_and_time_list = event_schedule_info['weekday_and_time_list']
+            else:
+                # Skip specific dates like:
+                # "27.05.: 10:00-12:00".
+                # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
+                if re.fullmatch(
+                    r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
+                ) or re.fullmatch(
+                    r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
+                ):
                     continue
 
-                match = re.fullmatch(
-                    r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי)"
-                    r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
-                    date_and_time,
+                date_and_time_list = re.sub(r"^מ \d\d\.\d\d\., ", "", date_and_time_list)
+                date_and_time_list = re.sub(r"^עד \d\d\.\d\d\., ", "", date_and_time_list)
+                date_and_time_list = re.sub(
+                    r"^\d\d\.\d\d\. עד \d\d\.\d\d\., ", "", date_and_time_list
                 )
-                if not match:
-                    raise RuntimeError(f"Invalid date and time: {date_and_time}")
+                date_and_time_list = re.sub(r", יוצא מן הכלל: .*$", "", date_and_time_list)
+                date_and_time_list = re.sub(r", הכל \d+ ימים$", "", date_and_time_list)
+                date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
 
-                day = match.group(1)
-                day = "ראשון" if day == "רִאשׁוֹ" else day
-                time_begin = match.group(2)
-                time_end = match.group(3)
-                time = f"{time_begin} - {time_end}"
-
-                if building_room_dict:
+                def date_and_time_parse(date_and_time: str):
+                    match = re.fullmatch(
+                        r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)"
+                        r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
+                        date_and_time,
+                    )
+                    if not match:
+                        raise RuntimeError(f"Invalid date and time: {date_and_time}")
+                    day = match.group(1)
+                    day = "ראשון" if day == "רִאשׁוֹ" else day
+                    time_begin = match.group(2)
+                    time_end = match.group(3)
                     days = [
                         "ראשון",
                         "שני",
@@ -547,9 +550,45 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                         "רביעי",
                         "חמישי",
                         "שישי",
+                        "שבת",
                     ]
-                    weekday_and_time = (days.index(day), time_begin, time_end)
-                    building, room = building_room_dict.get(weekday_and_time, ("", 0))
+                    return (days.index(day), time_begin, time_end)
+
+                date_and_time_list = [
+                    date_and_time_parse(x) for x in date_and_time_list
+                ]
+
+            for date_and_time in date_and_time_list:
+                weekday, time_begin, time_end = date_and_time
+                if weekday == 6:
+                    print(
+                        f"Warning: [{year}/{semester}/{course_number}] Skipping event"
+                        f" on Saturday: {date_and_time}"
+                    )
+                    continue
+
+                days = [
+                    "ראשון",
+                    "שני",
+                    "שלישי",
+                    "רביעי",
+                    "חמישי",
+                    "שישי",
+                ]
+                day = days[weekday]
+
+                time = f"{time_begin} - {time_end}"
+
+                # Temporary workaround for a buggy schedule entry.
+                if re.fullmatch(r"00:0\d - 00:0\d|00:0[1-9] - 01:00", time):
+                    print(
+                        f"Warning: [{year}/{semester}/{course_number}] Buggy date and"
+                        f" time: {date_and_time}"
+                    )
+                    continue
+
+                if building_room_dict:
+                    building, room = building_room_dict.get(date_and_time, ("", 0))
 
                 result_item = {
                     "קבוצה": group_id,
