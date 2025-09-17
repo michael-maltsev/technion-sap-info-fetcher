@@ -404,7 +404,230 @@ def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
     }
 
 
+def parse_event_category(
+    raw_schedule_item: dict,
+    raw_schedule: dict,
+    course_number: str,
+    year: int,
+    semester: int,
+) -> str:
+    """Parse and normalize the event category."""
+    category = raw_schedule_item["CategoryText"]
+    is_sport_course = re.fullmatch(r"03940[89]\d\d", course_number) is not None
+    if is_sport_course:
+        if category not in ["ספורט", "נבחרת ספורט"]:
+            raise RuntimeError(f"Invalid category: {category}")
+        category = raw_schedule_item["Name"]
+        # Sometimes the item name is generic and the schedule group item
+        # is more descriptive.
+        if (
+            re.match(r"ספורט חינוך גופני\s*-", category)
+            or category == "ספורט נבחרות ספורט"
+            or re.search(
+                r"-\s*0*" + re.escape(course_number.lstrip("0")) + r"$",
+                category,
+            )
+        ) and raw_schedule["Name"]:
+            category = re.sub(r"^SE\d+\s*", "", raw_schedule["Name"])
+    # Temporary special case.
+    elif (
+        year == 2024
+        and semester == 201
+        and course_number == "00950219"
+        and category == ""
+        and raw_schedule_item["Name"].startswith("תרגיל")
+    ):
+        category = "תרגול"
+    elif category not in ["הרצאה", "תרגול", "מעבדה", "פרויקט", "סמינר"]:
+        raise RuntimeError(f"Invalid category: {category}")
+
+    return category
+
+
+def parse_room_info(
+    raw_schedule_item: dict, year: int, semester: int
+) -> tuple[str, int, Optional[dict]]:
+    """Parse room information and return building, room, and building_room_dict."""
+    building = ""
+    room = 0
+    event_schedule_info = None
+    building_room_dict = None
+    building_and_room = raw_schedule_item["RoomText"]
+    if building_and_room:
+        if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
+            building = get_building_name(
+                year, semester, raw_schedule_item["RoomId"]
+            )
+            room = int(match.group(2))
+        elif building_and_room == "ראה פרטים":
+            if not event_schedule_info:
+                event_schedule_info = get_event_schedule_info(
+                    year, semester, raw_schedule_item["Otjid"]
+                )
+            building_room_dict = event_schedule_info['rooms_by_time']
+        else:
+            raise RuntimeError(
+                f"Invalid building and room: {building_and_room}"
+            )
+
+    return building, room, building_room_dict
+
+
+def parse_staff_info(raw_schedule_item: dict) -> str:
+    """Parse staff information from persons data."""
+    staff = ""
+    for person in raw_schedule_item["Persons"]["results"]:
+        title = person["Title"].strip()
+        if title and title != "-":
+            staff += f"{title} "
+        staff += f"{person['FirstName']} {person['LastName']}\n"
+    return staff.rstrip("\n")
+
+
+def parse_date_and_time_string(date_and_time: str) -> tuple[int, str, str]:
+    """Parse a single date and time string into weekday, begin time, end time."""
+    match = re.fullmatch(
+        r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)"
+        r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
+        date_and_time,
+    )
+    if not match:
+        raise RuntimeError(f"Invalid date and time: {date_and_time}")
+
+    day = match.group(1)
+    day = "ראשון" if day == "רִאשׁוֹ" else day
+    time_begin = match.group(2)
+    time_end = match.group(3)
+    days = [
+        "ראשון",
+        "שני",
+        "שלישי",
+        "רביעי",
+        "חמישי",
+        "שישי",
+        "שבת",
+    ]
+    return (days.index(day), time_begin, time_end)
+
+
+def parse_schedule_times(raw_schedule_item: dict, year: int, semester: int) -> list:
+    """Parse schedule times from raw schedule item."""
+    date_and_time_list = raw_schedule_item["ScheduleSummary"]
+    if date_and_time_list != raw_schedule_item["ScheduleText"]:
+        raise RuntimeError(
+            f"Date and time mismatch: {date_and_time_list} !="
+            f" {raw_schedule_item['ScheduleText']}"
+        )
+
+    if not date_and_time_list:
+        return []
+
+    if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
+        event_schedule_info = get_event_schedule_info(
+            year, semester, raw_schedule_item["Otjid"]
+        )
+        return event_schedule_info['weekday_and_time_list']
+
+    # Skip specific dates like:
+    # "27.05.: 10:00-12:00".
+    # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
+    if re.fullmatch(
+        r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
+    ) or re.fullmatch(
+        r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
+    ):
+        return []
+
+    # Clean up the date and time string.
+    date_and_time_list = re.sub(r"^מ \d\d\.\d\d\., ", "", date_and_time_list)
+    date_and_time_list = re.sub(r"^עד \d\d\.\d\d\., ", "", date_and_time_list)
+    date_and_time_list = re.sub(
+        r"^\d\d\.\d\d\. עד \d\d\.\d\d\., ", "", date_and_time_list
+    )
+    date_and_time_list = re.sub(r", יוצא מן הכלל: .*$", "", date_and_time_list)
+    date_and_time_list = re.sub(r", הכל \d+ ימים$", "", date_and_time_list)
+    date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
+
+    return [parse_date_and_time_string(x) for x in date_and_time_list]
+
+
+def reassign_event_ids(
+    result: list[dict], year: int, semester: int, course_number: str
+):
+    """Reassign prettier event IDs based on groups."""
+    # Make ids prettier by deriving them from groups.
+    event_id_to_group = {}
+    for event in result:
+        groups = event_id_to_group.setdefault(event["מס."], [])
+        if event["קבוצה"] not in groups:
+            groups.append(event["קבוצה"])
+
+    assigned_ids = {}
+    new_ids_events = {}
+    for event in result:
+        old_id = event["מס."]
+
+        if old_id in assigned_ids:
+            event["מס."] = assigned_ids[old_id]
+            continue
+
+        if len(event_id_to_group[old_id]) == 1:
+            new_id = event_id_to_group[old_id][0]
+            fallback_new_id = None
+        else:
+            new_id = (event["קבוצה"] // 10) * 10
+            fallback_new_id = event_id_to_group[old_id][0]
+
+        while new_id in assigned_ids.values() and not (
+            new_ids_events[new_id][0]["קבוצה"] == event["קבוצה"]
+            and all(x["סוג"] != event["סוג"] for x in new_ids_events[new_id])
+        ):
+            if fallback_new_id is not None:
+                new_id = fallback_new_id
+                fallback_new_id = None
+            else:
+                print(
+                    f"Warning: [{year}/{semester}/{course_number}] Duplicate id"
+                    f" {new_id} for {event}: {assigned_ids}"
+                )
+                new_id += 100
+
+        assigned_ids[old_id] = new_id
+        event["מס."] = new_id
+
+        new_ids_events.setdefault(new_id, []).append(event)
+
+
+def validate_event_consistency(result: list[dict]):
+    """Validate that events of same category and id are consistent across groups."""
+    for category in set(x["סוג"] for x in result):
+        for event_id in set(x["מס."] for x in result if x["סוג"] == category):
+            events_same_category_and_id = [
+                x for x in result if x["סוג"] == category and x["מס."] == event_id
+            ]
+            event_groups = set(x["קבוצה"] for x in events_same_category_and_id)
+
+            events_grouped = set()
+            for group in event_groups:
+                events_grouped.add(
+                    frozenset(
+                        [
+                            tuple({**x, "קבוצה": None}.items())
+                            for x in events_same_category_and_id
+                            if x["קבוצה"] == group
+                        ]
+                    )
+                )
+
+            if len(events_grouped) != 1:
+                raise RuntimeError(
+                    f"Invalid events for category {category} and id {event_id}:"
+                    f" {events_grouped}"
+                )
+
+
 def get_course_schedule(year: int, semester: int, course_number: str):
+    """Get the schedule for a course."""
     params = {
         "sap-client": "700",
         "$expand": ",".join(
@@ -434,129 +657,18 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
         raw_schedule_items = raw_schedule["EObjectSet"]["results"]
         for raw_schedule_item in raw_schedule_items:
-            category = raw_schedule_item["CategoryText"]
-            is_sport_course = re.fullmatch(r"03940[89]\d\d", course_number) is not None
-            if is_sport_course:
-                if category not in ["ספורט", "נבחרת ספורט"]:
-                    raise RuntimeError(f"Invalid category: {category}")
-                category = raw_schedule_item["Name"]
-                # Sometimes the item name is generic and the schedule group item
-                # is more descriptive.
-                if (
-                    re.match(r"ספורט חינוך גופני\s*-", category)
-                    or category == "ספורט נבחרות ספורט"
-                    or re.search(
-                        r"-\s*0*" + re.escape(course_number.lstrip("0")) + r"$",
-                        category,
-                    )
-                ) and raw_schedule["Name"]:
-                    category = re.sub(r"^SE\d+\s*", "", raw_schedule["Name"])
-            # Temporary special case.
-            elif (
-                year == 2024
-                and semester == 201
-                and course_number == "00950219"
-                and category == ""
-                and raw_schedule_item["Name"].startswith("תרגיל")
-            ):
-                category = "תרגול"
-            elif category not in ["הרצאה", "תרגול", "מעבדה", "פרויקט", "סמינר"]:
-                raise RuntimeError(f"Invalid category: {category}")
+            category = parse_event_category(raw_schedule_item, raw_schedule,
+                                           course_number, year, semester)
 
-            building = ""
-            room = 0
-            event_schedule_info = None
-            building_room_dict = None
-            building_and_room = raw_schedule_item["RoomText"]
-            if building_and_room:
-                if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
-                    building = get_building_name(
-                        year, semester, raw_schedule_item["RoomId"]
-                    )
-                    room = int(match.group(2))
-                elif building_and_room == "ראה פרטים":
-                    if not event_schedule_info:
-                        event_schedule_info = get_event_schedule_info(
-                            year, semester, raw_schedule_item["Otjid"]
-                        )
-                    building_room_dict = event_schedule_info['rooms_by_time']
-                else:
-                    raise RuntimeError(
-                        f"Invalid building and room: {building_and_room}"
-                    )
+            building, room, building_room_dict = parse_room_info(
+                raw_schedule_item, year, semester)
 
-            staff = ""
-            for person in raw_schedule_item["Persons"]["results"]:
-                title = person["Title"].strip()
-                if title and title != "-":
-                    staff += f"{title} "
-                staff += f"{person['FirstName']} {person['LastName']}\n"
-            staff = staff.rstrip("\n")
-
+            staff = parse_staff_info(raw_schedule_item)
             event_id = raw_schedule_item["Otjid"]
 
-            date_and_time_list = raw_schedule_item["ScheduleSummary"]
-            if date_and_time_list != raw_schedule_item["ScheduleText"]:
-                raise RuntimeError(
-                    f"Date and time mismatch: {date_and_time_list} !="
-                    f" {raw_schedule_item['ScheduleText']}"
-                )
-
+            date_and_time_list = parse_schedule_times(raw_schedule_item, year, semester)
             if not date_and_time_list:
                 continue
-
-            if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
-                if not event_schedule_info:
-                    event_schedule_info = get_event_schedule_info(
-                        year, semester, raw_schedule_item["Otjid"]
-                    )
-                date_and_time_list = event_schedule_info['weekday_and_time_list']
-            else:
-                # Skip specific dates like:
-                # "27.05.: 10:00-12:00".
-                # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
-                if re.fullmatch(
-                    r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
-                ) or re.fullmatch(
-                    r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
-                ):
-                    continue
-
-                date_and_time_list = re.sub(r"^מ \d\d\.\d\d\., ", "", date_and_time_list)
-                date_and_time_list = re.sub(r"^עד \d\d\.\d\d\., ", "", date_and_time_list)
-                date_and_time_list = re.sub(
-                    r"^\d\d\.\d\d\. עד \d\d\.\d\d\., ", "", date_and_time_list
-                )
-                date_and_time_list = re.sub(r", יוצא מן הכלל: .*$", "", date_and_time_list)
-                date_and_time_list = re.sub(r", הכל \d+ ימים$", "", date_and_time_list)
-                date_and_time_list = [x.strip() for x in date_and_time_list.split(",")]
-
-                def date_and_time_parse(date_and_time: str):
-                    match = re.fullmatch(
-                        r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)"
-                        r" (\d\d:\d\d)\s*-\s*(\d\d:\d\d)",
-                        date_and_time,
-                    )
-                    if not match:
-                        raise RuntimeError(f"Invalid date and time: {date_and_time}")
-                    day = match.group(1)
-                    day = "ראשון" if day == "רִאשׁוֹ" else day
-                    time_begin = match.group(2)
-                    time_end = match.group(3)
-                    days = [
-                        "ראשון",
-                        "שני",
-                        "שלישי",
-                        "רביעי",
-                        "חמישי",
-                        "שישי",
-                        "שבת",
-                    ]
-                    return (days.index(day), time_begin, time_end)
-
-                date_and_time_list = [
-                    date_and_time_parse(x) for x in date_and_time_list
-                ]
 
             for date_and_time in date_and_time_list:
                 weekday, time_begin, time_end = date_and_time
@@ -609,73 +721,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                         f" {result_item}"
                     )
 
-    # Make ids prettier by deriving them from groups.
-    event_id_to_group = {}
-    for event in result:
-        groups = event_id_to_group.setdefault(event["מס."], [])
-        if event["קבוצה"] not in groups:
-            groups.append(event["קבוצה"])
-
-    assigned_ids = {}
-    new_ids_events = {}
-    for event in result:
-        old_id = event["מס."]
-
-        if old_id in assigned_ids:
-            event["מס."] = assigned_ids[old_id]
-            continue
-
-        if len(event_id_to_group[old_id]) == 1:
-            new_id = event_id_to_group[old_id][0]
-            fallback_new_id = None
-        else:
-            new_id = (event["קבוצה"] // 10) * 10
-            fallback_new_id = event_id_to_group[old_id][0]
-
-        while new_id in assigned_ids.values() and not (
-            new_ids_events[new_id][0]["קבוצה"] == event["קבוצה"]
-            and all(x["סוג"] != event["סוג"] for x in new_ids_events[new_id])
-        ):
-            if fallback_new_id is not None:
-                new_id = fallback_new_id
-                fallback_new_id = None
-            else:
-                print(
-                    f"Warning: [{year}/{semester}/{course_number}] Duplicate id"
-                    f" {new_id} for {event}: {assigned_ids}"
-                )
-                new_id += 100
-
-        assigned_ids[old_id] = new_id
-        event["מס."] = new_id
-
-        new_ids_events.setdefault(new_id, []).append(event)
-
-    # Make sure each event of same category and id matches in all groups.
-    for category in set(x["סוג"] for x in result):
-        for id in set(x["מס."] for x in result if x["סוג"] == category):
-            events_same_category_and_id = [
-                x for x in result if x["סוג"] == category and x["מס."] == id
-            ]
-            event_groups = set(x["קבוצה"] for x in events_same_category_and_id)
-
-            events_grouped = set()
-            for group in event_groups:
-                events_grouped.add(
-                    frozenset(
-                        [
-                            tuple({**x, "קבוצה": None}.items())
-                            for x in events_same_category_and_id
-                            if x["קבוצה"] == group
-                        ]
-                    )
-                )
-
-            if len(events_grouped) != 1:
-                raise RuntimeError(
-                    f"Invalid events for category {category} and id {id}:"
-                    f" {events_grouped}"
-                )
+    reassign_event_ids(result, year, semester, course_number)
+    validate_event_consistency(result)
 
     return result
 
