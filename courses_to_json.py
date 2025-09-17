@@ -727,6 +727,15 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                 else:
                     building, room = "", 0
 
+                if not staff and date_and_time in event_schedule_info():
+                    event_schedule_person = event_schedule_info()[date_and_time].person
+                    if event_schedule_person:
+                        print(
+                            f"Warning: [{year}/{semester}/{course_number}] Missing"
+                            " staff info and schedule info has it:"
+                            f" {event_schedule_person}"
+                        )
+
                 result_item = {
                     "קבוצה": group_id,
                     "סוג": category,
