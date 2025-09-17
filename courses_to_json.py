@@ -7,7 +7,7 @@ import typing
 import urllib.parse
 from collections import defaultdict
 from datetime import datetime, timezone
-from functools import cache
+from functools import cache, lru_cache
 from itertools import repeat
 from multiprocessing import Pool
 from pathlib import Path
@@ -134,6 +134,7 @@ MaxDataServiceVersion: 2.0
     return result
 
 
+@lru_cache(maxsize=16)
 def send_request(query: str, allow_empty=False):
     delay = 5
     while True:
@@ -150,7 +151,8 @@ def sap_date_parse(date_str: str):
     if not match:
         raise RuntimeError(f"Invalid date: {date_str}")
 
-    return datetime.fromtimestamp(int(match.group(1)) / 1000, timezone.utc)
+    timestamp = int(match.group(1))
+    return datetime.fromtimestamp(timestamp / 1000, timezone.utc)
 
 
 def to_new_course_number(course):
@@ -450,7 +452,6 @@ def parse_room_info(
     """Parse room information and return building, room, and building_room_dict."""
     building = ""
     room = 0
-    event_schedule_info = None
     building_room_dict = None
     building_and_room = raw_schedule_item["RoomText"]
     if building_and_room:
@@ -460,10 +461,9 @@ def parse_room_info(
             )
             room = int(match.group(2))
         elif building_and_room == "ראה פרטים":
-            if not event_schedule_info:
-                event_schedule_info = get_event_schedule_info(
-                    year, semester, raw_schedule_item["Otjid"]
-                )
+            event_schedule_info = get_event_schedule_info(
+                year, semester, raw_schedule_item["Otjid"]
+            )
             building_room_dict = event_schedule_info['rooms_by_time']
         else:
             raise RuntimeError(
@@ -776,18 +776,16 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
         date = sap_date_parse(date_raw).strftime("%d-%m-%Y")
 
         time_begin_raw = exam["ExamBegTime"]
-        match = re.fullmatch(r"PT(\d\d)H(\d\d)M\d\dS", time_begin_raw)
-        if not match:
+        if match := re.fullmatch(r"PT(\d\d)H(\d\d)M\d\dS", time_begin_raw):
+            time_begin = match.group(1) + ":" + match.group(2)
+        else:
             raise RuntimeError(f"Invalid time: {time_begin_raw}")
 
-        time_begin = match.group(1) + ":" + match.group(2)
-
         time_end_raw = exam["ExamEndTime"]
-        match = re.fullmatch(r"PT(\d\d)H(\d\d)M\d\dS", time_end_raw)
-        if not match:
+        if match := re.fullmatch(r"PT(\d\d)H(\d\d)M\d\dS", time_end_raw):
+            time_end = match.group(1) + ":" + match.group(2)
+        else:
             raise RuntimeError(f"Invalid time: {time_end_raw}")
-
-        time_end = match.group(1) + ":" + match.group(2)
 
         notes = exam["ZzSeComment"]
 
