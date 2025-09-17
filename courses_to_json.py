@@ -6,8 +6,9 @@ import time
 import typing
 import urllib.parse
 from collections import defaultdict
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from functools import cache, lru_cache
+from functools import cache
 from itertools import repeat
 from multiprocessing import Pool
 from pathlib import Path
@@ -134,7 +135,6 @@ MaxDataServiceVersion: 2.0
     return result
 
 
-@lru_cache(maxsize=16)
 def send_request(query: str, allow_empty=False):
     delay = 5
     while True:
@@ -314,7 +314,34 @@ def get_building_name(year: int, semester: int, room_id: str):
     return building
 
 
-def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
+def parse_staff_info(raw_schedule_item: dict) -> str:
+    """Parse staff information from persons data."""
+    staff = ""
+    for person in raw_schedule_item["Persons"]["results"]:
+        title = person["Title"].strip()
+        if title and title != "-":
+            staff += f"{title} "
+        staff += f"{person['FirstName']} {person['LastName']}\n"
+    return staff.rstrip("\n")
+
+
+@dataclass(frozen=True)
+class EventScheduleTime:
+    weekday: int
+    begin_time: str
+    end_time: str
+
+
+@dataclass
+class EventScheduleInfo:
+    repeating: bool
+    building_and_room: tuple[str, int]
+    person: str
+
+
+def get_event_schedule_info(
+    year: int, semester: int, event_schedule_id: str
+) -> dict[EventScheduleTime, EventScheduleInfo]:
     params = {
         "sap-client": "700",
         "$filter": (
@@ -324,22 +351,22 @@ def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
         "$expand": ",".join(
             [
                 "Rooms",
-                # TODO
-                # "Persons"
+                "Persons",
             ]
         ),
     }
     raw_data = send_request(f"EventScheduleSet?{urllib.parse.urlencode(params)}")
     results = raw_data["d"]["results"]
 
-    weekday_and_time_histogram = defaultdict(int)
-    rooms_by_time = {}
+    @dataclass
+    class EventIntermediateScheduleInfo:
+        count: int = 0
+        building_and_room: tuple[str, int] = ("", 0)
+        person: str = ""
+
+    event_schedule_items = defaultdict(EventIntermediateScheduleInfo)
 
     for result in results:
-        # TODO
-        # if result["Persons"]["results"] != []:
-        #     exit(result)
-
         date_raw = result["Evdat"]
         begin_raw = result["Beguz"]
         end_raw = result["Enduz"]
@@ -361,8 +388,10 @@ def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
         else:
             raise RuntimeError(f"Invalid end time for {event_schedule_id}: {end_raw}")
 
-        weekday_and_time = (weekday, begin_time, end_time)
-        weekday_and_time_histogram[weekday_and_time] += 1
+        weekday_and_time = EventScheduleTime(weekday, begin_time, end_time)
+        event_schedule_item = event_schedule_items[weekday_and_time]
+        event_schedule_item.count += 1
+        event_schedule_item.person = parse_staff_info(result)
 
         rooms = result["Rooms"]["results"]
 
@@ -382,28 +411,24 @@ def get_event_schedule_info(year: int, semester: int, event_schedule_id: str):
                     f"Invalid room name for {event_schedule_id}: {room_name}"
                 )
 
-        if len(buildings) != 1:
-            continue
+        if len(buildings) == 1:
+            building = buildings.pop()
+            room_number = room_numbers.pop() if len(room_numbers) == 1 else 0
+            building_and_room = (building, room_number)
+            event_schedule_item.building_and_room = building_and_room
 
-        building = buildings.pop()
-        room_number = room_numbers.pop() if len(room_numbers) == 1 else 0
+    # Mark times that appear more than half the average number of times.
+    repeating_min_count = (13 if semester != 202 else 7) / 2
 
-        building_and_room = (building, room_number)
+    event_schedule_info: dict[EventScheduleTime, EventScheduleInfo] = {}
+    for time, info in event_schedule_items.items():
+        event_schedule_info[time] = EventScheduleInfo(
+            repeating=info.count > repeating_min_count,
+            building_and_room=info.building_and_room,
+            person=info.person,
+        )
 
-        rooms_by_time[weekday_and_time] = building_and_room
-
-    # Keep times that appear more than half the average number of times.
-    weekday_and_time_min_count = (13 if semester != 202 else 7) / 2
-    weekday_and_time_list = [
-        x
-        for x, count in weekday_and_time_histogram.items()
-        if count > weekday_and_time_min_count
-    ]
-
-    return {
-        'rooms_by_time': rooms_by_time,
-        'weekday_and_time_list': weekday_and_time_list,
-    }
+    return event_schedule_info
 
 
 def parse_event_category(
@@ -448,43 +473,24 @@ def parse_event_category(
 
 def parse_room_info(
     raw_schedule_item: dict, year: int, semester: int
-) -> tuple[str, int, Optional[dict]]:
+) -> Optional[tuple[str, int]]:
     """Parse room information and return building, room, and building_room_dict."""
-    building = ""
-    room = 0
-    building_room_dict = None
     building_and_room = raw_schedule_item["RoomText"]
-    if building_and_room:
-        if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
-            building = get_building_name(
-                year, semester, raw_schedule_item["RoomId"]
-            )
-            room = int(match.group(2))
-        elif building_and_room == "ראה פרטים":
-            event_schedule_info = get_event_schedule_info(
-                year, semester, raw_schedule_item["Otjid"]
-            )
-            building_room_dict = event_schedule_info['rooms_by_time']
-        else:
-            raise RuntimeError(
-                f"Invalid building and room: {building_and_room}"
-            )
+    if not building_and_room:
+        return "", 0
 
-    return building, room, building_room_dict
+    if building_and_room == "ראה פרטים":
+        return None
+
+    if match := re.fullmatch(r"(\d\d\d)-(\d\d\d\d)", building_and_room):
+        building = get_building_name(year, semester, raw_schedule_item["RoomId"])
+        room = int(match.group(2))
+        return building, room
+    else:
+        raise RuntimeError(f"Invalid building and room: {building_and_room}")
 
 
-def parse_staff_info(raw_schedule_item: dict) -> str:
-    """Parse staff information from persons data."""
-    staff = ""
-    for person in raw_schedule_item["Persons"]["results"]:
-        title = person["Title"].strip()
-        if title and title != "-":
-            staff += f"{title} "
-        staff += f"{person['FirstName']} {person['LastName']}\n"
-    return staff.rstrip("\n")
-
-
-def parse_date_and_time_string(date_and_time: str) -> tuple[int, str, str]:
+def parse_date_and_time_string(date_and_time: str) -> EventScheduleTime:
     """Parse a single date and time string into weekday, begin time, end time."""
     match = re.fullmatch(
         r"(?:יום|יוֹם) (רִאשׁוֹ|ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)"
@@ -507,10 +513,11 @@ def parse_date_and_time_string(date_and_time: str) -> tuple[int, str, str]:
         "שישי",
         "שבת",
     ]
-    return (days.index(day), time_begin, time_end)
+
+    return EventScheduleTime(days.index(day), time_begin, time_end)
 
 
-def parse_schedule_times(raw_schedule_item: dict, year: int, semester: int) -> list:
+def parse_schedule_times(raw_schedule_item: dict) -> Optional[list[EventScheduleTime]]:
     """Parse schedule times from raw schedule item."""
     date_and_time_list = raw_schedule_item["ScheduleSummary"]
     if date_and_time_list != raw_schedule_item["ScheduleText"]:
@@ -523,10 +530,7 @@ def parse_schedule_times(raw_schedule_item: dict, year: int, semester: int) -> l
         return []
 
     if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
-        event_schedule_info = get_event_schedule_info(
-            year, semester, raw_schedule_item["Otjid"]
-        )
-        return event_schedule_info['weekday_and_time_list']
+        return None
 
     # Skip specific dates like:
     # "27.05.: 10:00-12:00".
@@ -657,22 +661,37 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
         raw_schedule_items = raw_schedule["EObjectSet"]["results"]
         for raw_schedule_item in raw_schedule_items:
+            retrieved_event_schedule_info = None
+
+            def event_schedule_info():
+                nonlocal retrieved_event_schedule_info
+                if retrieved_event_schedule_info is None:
+                    retrieved_event_schedule_info = get_event_schedule_info(
+                        year, semester, raw_schedule_item["Otjid"]
+                    )
+                return retrieved_event_schedule_info
+
             category = parse_event_category(raw_schedule_item, raw_schedule,
                                            course_number, year, semester)
 
-            building, room, building_room_dict = parse_room_info(
-                raw_schedule_item, year, semester)
+            building_and_room = parse_room_info(raw_schedule_item, year, semester)
 
             staff = parse_staff_info(raw_schedule_item)
             event_id = raw_schedule_item["Otjid"]
 
-            date_and_time_list = parse_schedule_times(raw_schedule_item, year, semester)
+            date_and_time_list = parse_schedule_times(raw_schedule_item)
+            if date_and_time_list is None:
+                date_and_time_list = [
+                    x
+                    for x in event_schedule_info().keys()
+                    if event_schedule_info()[x].repeating
+                ]
+
             if not date_and_time_list:
                 continue
 
             for date_and_time in date_and_time_list:
-                weekday, time_begin, time_end = date_and_time
-                if weekday == 6:
+                if date_and_time.weekday == 6:
                     print(
                         f"Warning: [{year}/{semester}/{course_number}] Skipping event"
                         f" on Saturday: {date_and_time}"
@@ -687,9 +706,9 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     "חמישי",
                     "שישי",
                 ]
-                day = days[weekday]
+                day = days[date_and_time.weekday]
 
-                time = f"{time_begin} - {time_end}"
+                time = f"{date_and_time.begin_time} - {date_and_time.end_time}"
 
                 # Temporary workaround for a buggy schedule entry.
                 if re.fullmatch(r"00:0\d - 00:0\d|00:0[1-9] - 01:00", time):
@@ -699,8 +718,14 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                     continue
 
-                if building_room_dict:
-                    building, room = building_room_dict.get(date_and_time, ("", 0))
+                if building_and_room:
+                    building, room = building_and_room
+                elif date_and_time in event_schedule_info():
+                    building, room = event_schedule_info()[
+                        date_and_time
+                    ].building_and_room
+                else:
+                    building, room = "", 0
 
                 result_item = {
                     "קבוצה": group_id,
