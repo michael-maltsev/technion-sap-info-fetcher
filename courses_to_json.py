@@ -957,7 +957,18 @@ def get_course_full_data(year: int, semester: int, course_number: str):
             raise RuntimeError(f"Invalid relationship: {rel_item['ZzRelationshipKey']}")
 
     prereq = ""
+    last_prereq_item = None
     for prereq_item in sap_course["SmPrereq"]["results"]:
+        # In case of a buggy entry with two consecutive course ids, add a space.
+        if (
+            last_prereq_item
+            and last_prereq_item["ModuleId"].lstrip("0")
+            and not last_prereq_item["Operator"]
+            and not prereq_item["Bracket"]
+            and prereq_item["ModuleId"].lstrip("0")
+        ):
+            prereq += " "
+
         prereq += prereq_item["Bracket"]
         if prereq_item["ModuleId"].lstrip("0"):
             prereq += prereq_item["ModuleId"]
@@ -967,6 +978,7 @@ def get_course_full_data(year: int, semester: int, course_number: str):
             prereq += f" או "
         elif prereq_item["Operator"]:
             raise RuntimeError(f"Invalid operator: {prereq_item['Operator']}")
+        last_prereq_item = prereq_item
     prereq = re.sub(r"\((\d+)\)", r"\1", prereq)
     prereq = re.sub(r"^\(([^()]+)\)$", r"\1", prereq)
 
