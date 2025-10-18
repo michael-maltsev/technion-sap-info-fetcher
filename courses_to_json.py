@@ -710,8 +710,8 @@ def get_course_schedule(year: int, semester: int, course_number: str):
 
                 time = f"{date_and_time.begin_time} - {date_and_time.end_time}"
 
-                # Temporary workaround for a buggy schedule entry.
-                if re.fullmatch(r"00:0\d - 00:0\d|00:0[1-9] - 01:00", time):
+                # A workaround for buggy schedule entries.
+                if re.fullmatch(r"0(\d):0\d - 0(\1):0\d|00:0[1-9] - 01:00", time):
                     print(
                         f"Warning: [{year}/{semester}/{course_number}] Buggy date and"
                         f" time: {date_and_time}"
