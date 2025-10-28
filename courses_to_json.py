@@ -1049,34 +1049,29 @@ def get_course_full_data_star(args):
         raise
 
 
-def postprocess_2024_200_201(result: list[dict], output_file: Path):
+def postprocess(result: list[dict], output_file: Path):
     unprocessed_file = output_file.with_stem(f"{output_file.stem}.unfiltered")
     output_file.rename(unprocessed_file)
 
     result = result.copy()
     for item in result:
-        course = item["general"]["מספר מקצוע"]
-
-        # Requested to be filtered by the faculty.
-        is_math_course = course.startswith("0104") or course.startswith("0106")
-        if is_math_course:
-            schedule = []
-            for s in item["schedule"]:
-                if s["קבוצה"] in [
-                    # סינים (סטודנטים סינים שלומדים בסין).
-                    77,
-                    # לימודי חוץ. זו קבוצה פיקטיבית.
-                    69,
-                    # יש את זה רק במושגי יסוד במתמטיקה, מדובר על תוכנית אודיסאה
-                    # של תלמידי תיכון שלומדים בטכניון.
-                    40,
-                    # בינלאומי.
-                    80,
-                    86,
-                ]:
-                    continue
-                schedule.append(s)
-            item["schedule"] = schedule
+        schedule = []
+        for s in item["schedule"]:
+            if s["קבוצה"] in [
+                # סינים (סטודנטים סינים שלומדים בסין).
+                77,
+                # לימודי חוץ. זו קבוצה פיקטיבית.
+                69,
+                # יש את זה רק במושגי יסוד במתמטיקה, מדובר על תוכנית אודיסאה
+                # של תלמידי תיכון שלומדים בטכניון.
+                40,
+                # בינלאומי.
+                80,
+                86,
+            ]:
+                continue
+            schedule.append(s)
+        item["schedule"] = schedule
 
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
@@ -1111,8 +1106,7 @@ def run(
         json.dump(result, f, indent=2, ensure_ascii=False)
 
     if run_postprocessing:
-        if year == 2024 and semester in [200, 201]:
-            result = postprocess_2024_200_201(result, output_file)
+        result = postprocess(result, output_file)
 
     if min_js_output_file:
         with min_js_output_file.open("w", encoding="utf-8") as f:
