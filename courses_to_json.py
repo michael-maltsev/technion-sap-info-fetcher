@@ -1055,7 +1055,7 @@ def postprocess(result: list[dict], output_file: Path):
 
     result = result.copy()
     for item in result:
-        schedule = []
+        new_schedule = []
         for s in item["schedule"]:
             if s["קבוצה"] in [
                 # סינים (סטודנטים סינים שלומדים בסין).
@@ -1070,8 +1070,12 @@ def postprocess(result: list[dict], output_file: Path):
                 86,
             ]:
                 continue
-            schedule.append(s)
-        item["schedule"] = schedule
+            new_schedule.append(s)
+
+        # Only replace if the new schedule is non-empty. Otherwise, it might be
+        # a course specifically for international students or similar.
+        if len(new_schedule) > 0:
+            item["schedule"] = new_schedule
 
     with output_file.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
