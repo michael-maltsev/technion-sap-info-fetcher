@@ -885,7 +885,7 @@ def get_adjoining_courses(semester_notes: str):
     elif match := re.match(r"\d{5,8}(\s+או\s+\d{5,8})+$", content, flags=re.MULTILINE):
         courses = [x.strip() for x in match.group(0).split("או")]
     elif match := re.match(r"(.*?)(?:\.$|\.\n|\n\n|$)", content, flags=re.DOTALL):
-        for adjoining_course in match.group(1).split(","):
+        for adjoining_course in re.split(r",|\s+או\s+", match.group(1)):
             adjoining_course = adjoining_course.strip()
 
             # A course number, possibly followed by the course name.
