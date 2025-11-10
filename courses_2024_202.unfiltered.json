@@ -10,7 +10,8 @@
       "נקודות": "2",
       "אחראים": "ד\"ר אריה סידס",
       "הערות": "",
-      "מועד א": "31-10-2025 09:00 - 12:00"
+      "מועד א": "31-10-2025 09:00 - 12:00",
+      "מועד ב": "05-12-2025 09:00 - 12:00"
     },
     "schedule": [
       {
@@ -2664,7 +2665,7 @@
     "general": {
       "מספר מקצוע": "01140051",
       "שם מקצוע": "פיסיקה 1",
-      "סילבוס": "*** מקצועות קדם: בחינת סווג בפיסיקה חלק א' - מכניקה או פטור ממנה.*** המקצוע מכיל נושאים במכניקה קלסית. א. מכניקה ניוטונית: הבחנה בין כוחות פנימיים וחצוניים, שימור אנרגיה. תנע ותנע זויתי (למערכת חלקיקים ללא כוחות חיצוניים). דוגמאות של משואות תנועה, טרנספורמצית גלילאי, מערכות מואצות. ב. תורת היחסות הפרטית: מדידת מהירות האור ותכונותיה, עקרון היחסות, טרנספורמצית לורנץ, זמן עצמי, תופעת דופלר יחסותית, אנרגיה ותנע יחסותיים, פיזור, יצירה והתפרקות של חלקיקים.",
+      "סילבוס": "Newtonian mechanics: internal and external forces, conservation of energy, linear momentum, angular momentum, equations of motion, Galilean transformation, accelerated systems. Special theory of relativity: velocity of light and its measurement, relativity principle, Lorentz transformation, proper time, relativistic Doppler effect, relativistic energy and momentum, collisions, creation and decay of particles.",
       "פקולטה": "הפקולטה לפיזיקה",
       "מסגרת לימודים": "לימודי הסמכה",
       "מקצועות קדם": "01130013",
