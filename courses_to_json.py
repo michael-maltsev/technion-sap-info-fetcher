@@ -671,8 +671,9 @@ def get_course_schedule(year: int, semester: int, course_number: str):
                     )
                 return retrieved_event_schedule_info
 
-            category = parse_event_category(raw_schedule_item, raw_schedule,
-                                           course_number, year, semester)
+            category = parse_event_category(
+                raw_schedule_item, raw_schedule, course_number, year, semester
+            )
 
             building_and_room = parse_room_info(raw_schedule_item, year, semester)
 
