@@ -456,11 +456,9 @@ def parse_event_category(
             )
         ) and raw_schedule["Name"]:
             category = re.sub(r"^SE\d+\s*", "", raw_schedule["Name"])
-    # Temporary special case.
+    # Temporary (?) special case.
     elif (
-        year == 2024
-        and semester == 201
-        and course_number == "00950219"
+        course_number == "00950219"
         and category == ""
         and raw_schedule_item["Name"].startswith("תרגיל")
     ):
