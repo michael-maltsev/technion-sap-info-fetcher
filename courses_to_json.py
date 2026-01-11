@@ -928,6 +928,8 @@ def get_course_full_data(year: int, semester: int, course_number: str):
     else:
         raise RuntimeError(f"Invalid course number: {course_number}")
 
+    course_name = re.sub(r"\s+", " ", sap_course["Name"].strip())
+
     points = sap_course["Points"]
     points = re.sub(r"(\.[1-9]+)0+$", r"\1", points)
     points = re.sub(r"\.0+$", r"", points)
@@ -987,7 +989,7 @@ def get_course_full_data(year: int, semester: int, course_number: str):
 
     general = {
         "מספר מקצוע": course_number,
-        "שם מקצוע": sap_course["Name"],
+        "שם מקצוע": course_name,
         "סילבוס": sap_course["StudyContentDescription"],
         "פקולטה": sap_course["OrgText"],
         "מסגרת לימודים": sap_course["ZzAcademicLevelText"],
