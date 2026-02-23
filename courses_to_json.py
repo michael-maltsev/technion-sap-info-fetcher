@@ -6,7 +6,7 @@ import time
 import typing
 import urllib.parse
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import cache
 from itertools import repeat
