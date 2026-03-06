@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 import json
+import os
 import re
 import time
 import typing
@@ -17,8 +18,9 @@ from typing import Any, Optional
 import requests
 from tqdm import tqdm
 
-POOL_CONCURRENT_PROCESSES = 16
 REQUEST_TIMEOUT = 60
+REQUEST_PROXY_URL = os.environ.get("REQUEST_PROXY_URL")
+POOL_CONCURRENT_PROCESSES = 1 if REQUEST_PROXY_URL else 16
 
 CACHE_DIR_PATH = Path(".cache_dir")
 CACHE_DIR: Optional[Path] = (
@@ -91,6 +93,11 @@ def send_request_once(query: str, allow_empty: bool):
         # "Cookie": SAP_COOKIE,
     }
 
+    request_url = url
+    if REQUEST_PROXY_URL:
+        request_url = REQUEST_PROXY_URL
+        headers["Proxy-Target-URL"] = url
+
     data = f"""
 --batch_1d12-afbf-e3c7
 Content-Type: application/http
@@ -110,7 +117,9 @@ MaxDataServiceVersion: 2.0
 """
     data = data.replace("\n", "\r\n")
 
-    response = session.post(url, headers=headers, data=data, timeout=REQUEST_TIMEOUT)
+    response = session.post(
+        request_url, headers=headers, data=data, timeout=REQUEST_TIMEOUT
+    )
     if response.status_code != 202:
         raise RuntimeError(f"Bad status code: {response.status_code}, expected 202")
 

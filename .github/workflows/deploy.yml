@@ -40,6 +40,8 @@ jobs:
             --min-js-output-file='./gh-pages/courses_{year}_{semester}.min.js' \
             --last-semesters-output-file './gh-pages/last_semesters.json' \
             --run-postprocessing
+        env:
+          REQUEST_PROXY_URL: ${{ secrets.REQUEST_PROXY_URL }}
       - name: Deploy
         run: |
           cd gh-pages
