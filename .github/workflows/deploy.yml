@@ -34,15 +34,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests tqdm
       - name: Generate courses
+        env:
+          PROXY_SERVER_URL: ${{ secrets.PROXY_SERVER_URL }}
         run: |
+          PROXY_ARG=""
+          if [ -n "$PROXY_SERVER_URL" ]; then
+            PROXY_SERVER=$(curl -sf "$PROXY_SERVER_URL")
+            echo "::add-mask::$PROXY_SERVER"
+            PROXY_ARG="--proxy-server=$PROXY_SERVER"
+          fi
           python -u ./main/courses_to_json.py last-3 \
             './gh-pages/courses_{year}_{semester}.json' \
             --min-js-output-file='./gh-pages/courses_{year}_{semester}.min.js' \
             --last-semesters-output-file './gh-pages/last_semesters.json' \
-            --run-postprocessing
-        env:
-          HTTP_PROXY: ${{ secrets.HTTP_PROXY }}
-          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+            --run-postprocessing \
+            $PROXY_ARG
       - name: Deploy
         run: |
           cd gh-pages

@@ -1,7 +1,6 @@
 import argparse
 import hashlib
 import json
-import os
 import re
 import time
 import typing
@@ -31,17 +30,6 @@ CACHE_DIR: Optional[Path] = (
 VERBOSE_LOGGING = False
 
 session = requests.session()
-
-session.proxies = {
-    # Use fiddler as proxy
-    # "http": "http://127.0.0.1:8888",
-    # "https": "http://127.0.0.1:8888",
-    # Use tor as proxy
-    # "http": "socks5://127.0.0.1:9050",
-    # "https": "socks5://127.0.0.1:9050",
-    "http": os.environ.get("HTTP_PROXY", ""),
-    "https": os.environ.get("HTTPS_PROXY", ""),
-}
 
 
 def send_request_once(query: str, allow_empty: bool):
@@ -1073,6 +1061,10 @@ def get_course_full_data(year: int, semester: int, course_number: str):
     }
 
 
+def pool_init(proxies):
+    session.proxies = proxies
+
+
 def get_course_full_data_star(args):
     try:
         return get_course_full_data(*args)
@@ -1126,7 +1118,9 @@ def run(
 
     course_numbers = sorted(get_sap_course_numbers(year, semester))
 
-    with Pool(POOL_CONCURRENT_PROCESSES) as pool:
+    with Pool(
+        POOL_CONCURRENT_PROCESSES, initializer=pool_init, initargs=(session.proxies,)
+    ) as pool:
         args = list(
             zip(
                 repeat(year),
@@ -1161,7 +1155,16 @@ def main():
     parser.add_argument("--min-js-output-file", default=None)
     parser.add_argument("--last-semesters-output-file", default=None)
     parser.add_argument("--run-postprocessing", action="store_true")
+    parser.add_argument("--proxy-server", default=None)
     args = parser.parse_args()
+
+    # Fiddler: http://127.0.0.1:8888
+    # Tor: socks5://127.0.0.1:9050
+    if args.proxy_server:
+        session.proxies = {
+            "http": args.proxy_server,
+            "https": args.proxy_server,
+        }
 
     year_and_semester = args.year_and_semester.split("-")
     if len(year_and_semester) != 2:
