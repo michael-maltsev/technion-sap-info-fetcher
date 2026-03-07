@@ -351,6 +351,18 @@ def get_event_schedule_info(
             f"Otjid eq '{event_schedule_id}' and Peryr eq '{year}' and Perid eq"
             f" '{semester}'"
         ),
+        "$select": ",".join(
+            [
+                "Evdat",
+                "Beguz",
+                "Enduz",
+                "Rooms/Otjid",
+                "Rooms/Name",
+                "Persons/Title",
+                "Persons/FirstName",
+                "Persons/LastName",
+            ]
+        ),
         "$expand": ",".join(
             [
                 "Rooms",
@@ -635,6 +647,22 @@ def get_course_schedule(year: int, semester: int, course_number: str):
     """Get the schedule for a course."""
     params = {
         "sap-client": "700",
+        "$select": ",".join(
+            [
+                "ZzSeSeqnr",
+                "Name",
+                "EObjectSet/Otjid",
+                "EObjectSet/CategoryText",
+                "EObjectSet/Name",
+                "EObjectSet/RoomText",
+                "EObjectSet/RoomId",
+                "EObjectSet/ScheduleSummary",
+                "EObjectSet/ScheduleText",
+                "EObjectSet/Persons/Title",
+                "EObjectSet/Persons/FirstName",
+                "EObjectSet/Persons/LastName",
+            ]
+        ),
         "$expand": ",".join(
             [
                 "EObjectSet",
