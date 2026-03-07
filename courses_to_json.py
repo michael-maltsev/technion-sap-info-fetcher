@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 import json
+import os
 import re
 import time
 import typing
@@ -38,6 +39,8 @@ session.proxies = {
     # Use tor as proxy
     # "http": "socks5://127.0.0.1:9050",
     # "https": "socks5://127.0.0.1:9050",
+    "http": os.environ.get("HTTP_PROXY", ""),
+    "https": os.environ.get("HTTPS_PROXY", ""),
 }
 
 
