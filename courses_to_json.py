@@ -530,7 +530,7 @@ def parse_schedule_times(raw_schedule_item: dict) -> Optional[list[EventSchedule
     if not date_and_time_list:
         return []
 
-    if date_and_time_list in ["לֹא סָדִיר", "לא סדיר"]:
+    if date_and_time_list in ["לֹא סָדִיר", "לא סדיר", "מועדי מפגשים"]:
         return None
 
     # Skip specific dates like:
