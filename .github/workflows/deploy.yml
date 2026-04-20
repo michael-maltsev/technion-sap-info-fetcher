@@ -34,8 +34,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests tqdm
       - name: Generate courses
-        env:
-          PROXY_SERVER_URL: ${{ secrets.PROXY_SERVER_URL }}
+        # env:
+        #   PROXY_SERVER_URL: ${{ secrets.PROXY_SERVER_URL }}
         run: |
           PROXY_ARG=""
           if [ -n "$PROXY_SERVER_URL" ]; then
