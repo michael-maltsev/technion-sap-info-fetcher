@@ -1053,7 +1053,25 @@ def get_course_full_data(year: int, semester: int, course_number: str):
         if exam_date_time:
             general[exam] = exam_date_time
 
-    schedule = get_course_schedule(year, semester, course_number)
+    for _ in range(20):
+        try:
+            schedule = get_course_schedule(year, semester, course_number)
+            break
+        except Exception as e:
+            # A temporary workaround for a specific buggy course with
+            # inconsistent schedule data - SAP returns varying data across calls
+            # for this course.
+            buggy_course = (2025, 201, "01040013")
+            msg = "Invalid events for category הרצאה and id 10"
+            if (year, semester, course_number) == buggy_course and msg in str(e):
+                print(
+                    f"Warning: [{year}/{semester}/{course_number}] Retrying schedule"
+                    " for known buggy course"
+                )
+                continue
+            raise
+    else:
+        raise RuntimeError(f"Gave up retrying buggy schedule")
 
     return {
         "general": general,
