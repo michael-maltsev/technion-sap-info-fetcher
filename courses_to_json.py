@@ -539,8 +539,9 @@ def parse_schedule_times(raw_schedule_item: dict) -> Optional[list[EventSchedule
     # Skip specific dates like:
     # "27.05.: 10:00-12:00".
     # "02.02., 03.02., 04.02., בהתאמה 08:00-17:00"
+    # "06.10. 09:00-14:00, 12.10. 09:00-14:00, 15.10. 09:00-13:00"
     if re.fullmatch(
-        r"\d\d\.\d\d\.: \d\d:\d\d-\d\d:\d\d", date_and_time_list
+        r"(\d\d\.\d\d\.:? \d\d:\d\d-\d\d:\d\d, )+", date_and_time_list + ", "
     ) or re.fullmatch(
         r"(\d\d\.\d\d\., )+בהתאמה \d\d:\d\d-\d\d:\d\d", date_and_time_list
     ):
