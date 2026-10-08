@@ -5302,6 +5302,123 @@
   },
   {
     "general": {
+      "מספר מקצוע": "06180044",
+      "שם מקצוע": "סטודיו בביוטק",
+      "סילבוס": "המקצוע ניתן במסגרת הועדה הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180047",
+      "שם מקצוע": "מדע נתונים גרפים עבור מערכות",
+      "סילבוס": "המקצוע ניתן במסגרת הועדה הבין-יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180048",
+      "שם מקצוע": "חומרה ומערכות עבור למידת מכונה",
+      "סילבוס": "המקצוע ניתן במסגרת הועדה הבין-יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180050",
+      "שם מקצוע": "למידת מכונה בתחום הבריאות הדיגיטל",
+      "סילבוס": "המקצוע ניתן במסגרת הועדה הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180052",
+      "שם מקצוע": "ערים חכמות",
+      "סילבוס": "המקצוע ניתן במסגרת הועדה הבין-יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180056",
+      "שם מקצוע": "מחקר בחווית משתמש",
+      "סילבוס": "המקצוע ניתן במסגרת הועד הבין יחידתית למדע יישומי, בשיתוף ע המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180063",
+      "שם מקצוע": "יישומים מעשיים במכונות לומדות",
+      "סילבוס": "this course provides hands-on experience developing and deploying foundational machine learning algorithms on real-world datasets for practical applications (e.g.! healthcare! computer vision). students will learn about the machine learning pipeline end-to-end including dataset creation! pre- and post-processing! annotation! annotation validation! preparation for machine learning! training and testing a model! and evaluation. students will focus on real-world challenges at each stage of the ml pipeline while handling biasin models and datasets. lastly! students will analyze the strengths and weaknesses of regression! classification! clustering and dee p learning algorithms. \r\n learning outcomes: at the end of the course the studetns will know:\r\n 1. collect a new dataset and prepare it for a ml task! train a model! and evaluate it._\r\n 2. apply regression! classification! clustering! and deep learning algorithms topractical applications.\r\n 3. analyze and identify key differences in regression! classification! clustering! and deep learning algorithms.\r\n 4. understand core challenges of dataset creation including handling missing data! bias! unlabeled data! among others.\r\n 5. represent",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180064",
+      "שם מקצוע": "ייצור ספרתי",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי! בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "06180074",
+      "שם מקצוע": "הבאה למוצר של מכונות לומדות",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
       "מספר מקצוע": "07480001",
       "שם מקצוע": "מדיניות ואסטרטגיה של ניהול מו\"פ",
       "סילבוס": "גופים עתירי טכנולוגיה משקיעים חלק גדול מתקציבם ומכח האדם האיכותי ביותר שלהם על מו~פ. בניית אסטרטגיה ומדיניות מו~פ קוהרנטית לארגון תשפיע מאד על הרלבנטיות שלו ועל הצלחתו לאורך זמן. בקורס זה נלמדים המרכיבים העיקריים הנדרשים לצורך כך: בניית אסטרטגיה ומדיניות מו~פ של ארגונים, ניהול תהליך הקצאת משאבים אופטימלי, ניהול פורטפוליו, ניהול מו~פ בתנאי אי-ודאות, אספקטים ארגוניים, תהליכי תכנון, בניית כ~א למו~פ, מודלים לבניית תכנית מו~פ אופטימלית שנתית ורב-שנתית. הקורס כולל דוגמאות של הדרך לבניית תכנית מו~פ אופטימלית במדינות ובארגונים שונים עם דוגמאות מפורטות מישראל וארה~ב. הסטודנטים יתרגלו את המודלים והתהליכים הנלמדים בקורס בפרוייקט גמר על חברה/ארגון לפי בחירתם. תוצא ות למידה: הסטודנטים והסטודנטיות ידעו לבנות אסטרטגיה ומדיניות מחקר ופיתוח לארגון ויתרגלו את ידיעותיהם על דוגמא מעשית.",
@@ -5350,6 +5467,45 @@
   },
   {
     "general": {
+      "מספר מקצוע": "61070027",
+      "שם מקצוע": "מערכות הזנק - תכנון והנדסה",
+      "סילבוס": "המקצוע ניתן במסגרת התנית הבין-יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070044",
+      "שם מקצוע": "ניצול מסדי נתונים בעולם הגדול",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070049",
+      "שם מקצוע": "ניהול מוצר",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
       "מספר מקצוע": "61070050",
       "שם מקצוע": "מחקר עצמאי - א",
       "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם מכון טכניון-קורנל ע\"ש ג'קובוס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
@@ -5363,9 +5519,412 @@
   },
   {
     "general": {
+      "מספר מקצוע": "61070051",
+      "שם מקצוע": "מחקר עצמאי - ב",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "4",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070054",
+      "שם מקצוע": "פרוייקט - סטודיו סטארט אפ",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070055",
+      "שם מקצוע": "מחקר עצמאי 1",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף מכון טכנולוגי לישראל טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפפורסם בקובתהמקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070056",
+      "שם מקצוע": "מחקר עצמאי 2",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין ילידתית למדע יישומי, בשיתוף מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "2",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070062",
+      "שם מקצוע": "שימושיות וחקר חוית המשתמש",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61070070",
+      "שם מקצוע": "חשיבה עיצובית",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף מכון טכניון-קורנל ע\"ש ג'קובס. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "מקצוע משותף",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080000",
+      "שם מקצוע": "שווקים ורשתות",
+      "סילבוס": "the course examines how the computing., economic and sociological worlds are connected and how these connections affects these worlds. tools from game theory and graph theory are introduced and then used to analyze network structures present in everyday life, with a focus on various types of markets. topics covered include social networks, web search, auctions, matching markets and voting. \r\n learning ouctomes: acquire tools and techniques (from computer science, economics and mathematics) to reason about network structures present in everyday life.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080024",
+      "שם מקצוע": "מבוא לאס קיו אל",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניוןו-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
       "מספר מקצוע": "61080028",
       "שם מקצוע": "תכן ועשייה בין-דיסציפלינאריים",
       "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080029",
+      "שם מקצוע": "נתונים עירוניים",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי, בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוסהמלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080089",
+      "שם מקצוע": "טכנולוגיה, תקשורת ודמוקרטיה",
+      "סילבוס": "this course is part of a city-wide effort to create new tech that supports and defends journalism and media - the most critical elements of our democracy - as they are increasingly threatened by political and market forces. this course will bring together journalism, design, media studies, and technical disciplines to understand the various threats to journalism and media, and attempt to address these challenges using technical and computational methods and techniques. the free press, journalism and the media are some of the most critical elements of our democracy, but have been increasingly under attack by political and market forces. these challenges  include: dwindling resources and support for deep investigative journalism, smear, law and technical and even physical assaults ofmedia organizations and journalists, challenges to credibility and reliability including fake news and discrediting campaigns, and shifting business models and income sources that threaten both local and national news organizations and coverage. the main content of this course will be provided in a weekly meeting in a semi-rotating location. in addition, there will be two hackathon events which will jumps",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080091",
+      "שם מקצוע": "סטודיו על חברות גדולות",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע  יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080093",
+      "שם מקצוע": "בלוקצ'יין, מטבע מבוזר וחוזים חכמים",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080103",
+      "שם מקצוע": "מחשוב מקיף",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080106",
+      "שם מקצוע": "מיישמים ראשונים",
+      "סילבוס": "המקצוע ניתן במסגגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080108",
+      "שם מקצוע": "משפטים ללא-משפטנים",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080109",
+      "שם מקצוע": "מערכות אוטונומיות חכמות",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080114",
+      "שם מקצוע": "מכירות ופיתוח עיסקי",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080117",
+      "שם מקצוע": "מודלים עסקיים",
+      "סילבוס": "המקצוע ניתן במסגרת התכנית הבין יחידתית למדע יישומי בשיתוף עם המכון לחדשנות טכניון-קורנל. הסילבוס המלא מפורסם בקובץ המקצועות באנגלית.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080124",
+      "שם מקצוע": "פרטיות נתוני הצרכן",
+      "סילבוס": " Catalog Description The goal of the course is to provide you with a foundational understanding of US privacy and cybersecurity laws and regulations as applied in a business environment. We will cover: key privacy laws impacting the use of consumer data in the business world, the obligations created by these laws, and the strategies used by companies to use this data in a compliant manner.  We will also discuss the changes in privacy law, how the U.S. privacy scheme compares to those in other parts of the world, including the EU. We will cover data analytics and digital and online privacy issues (including AI). We will cover privacy notices and disclosures as well and privacy issues in vendor relationships and agreements. Finally, we will dedicate several sessions to understanding the laws and regulations governing data breaches and cybersecurity, looking at businesses' obligations to manage cybersecurity risks generally, both in and outside the context of personal data.  Student Outcomes 1.\tAn understanding of the evolution of money from a gold standard to current fiat to stablecoins to central bank digital currencies 2.\tAn understanding of lending, derivatives, structured finance",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080126",
+      "שם מקצוע": "מימון מיזם בשלב מוקדם",
+      "סילבוס": "This course will conduct a detailed examination of the key aspects of a venture-backed Series A funding round, including the business and legal relationships and interactions between founders, board members, and investors in considering and negotiating the key documents/provisions of the Series A funding round. Mr. Bixler will use his experiences representing startups, investors and other key stakeholders in both internal and outside counsel roles to review real-world examples and illustrate the various perspectives of the key parties and their respective negotiation strategies on critical points. Students will work in teams to create mark-ups of key Series A financing transaction documents, and negotiate on behalf of their respective client(s) toward a successful Series A closing.  Student Outcomes 1.\tGain a deeper understanding the evolving technologies (NFTs) 2.\tLearn current debates and critiques 3.\tUnderstand their potential to create and drive value in the future",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "2",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080127",
+      "שם מקצוע": "דילמות במימון מיזמים חדשים",
+      "סילבוס": "The purpose of this class is to increase students’ chances of success in their early stage ventures by helping them avoid common team-related mistakes. We explore specific dilemmas that founders face—decisions that arrive early on, can be uncomfortable, and that need to be made with minimal information—but that can have far-reaching consequences. Whether the founding team stays together, whether the venture achieves an attractive exit, and the extent to which the founder(s) share in those rewards can all be largely determined by early-stage choices.  Student Outcomes 1.\tGeneral understanding of the venture capital mindset and business process. 2.\tUnderstanding of essential terms and clauses (and alternatives) for key venture funding agreements and/or documents. 3.\tAppreciation and understanding of the various roles, expectations and incentives for the key players in a venture funding round transaction. 4.\tExtensive practice with writing, drafting and negotiating Series A funding documents.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080130",
+      "שם מקצוע": "מטבעות קריפטו ומערכות בלוקצ'יין",
+      "סילבוס": " This course will offer a short tutorial on the basics of cryptography and explore its applications to cryptocurrencies and blockchains. The course will also focus on smart contracts, programs that execute on blockchains and allow the creation of new types of financial assets and agreements.  Student Outcomes: 1.\tEnhance Self-Awareness: Understand different communication styles and personality types to better navigate interpersonal dynamics. The goal is to be able to adjust communication and interaction strategies to suit different people and contexts effectively. This includes active listening, clear and effective speaking, and the ability to interpret and use body language to enhance how messages are given and received. 2.\tMaster Persuasion Techniques: techniques for influencing others by understanding the principles of persuasion, learning how to craft compelling arguments, and knowing how to motivate others toward a common goal. 3.\tPractical Application: Through case studies, role-playing, and real- world exercises, enable students to apply learned skills in varied scenarios, helping to cement these skills through practice.          1.\tEnhance Self-Awareness: Understand differe",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080133",
+      "שם מקצוע": "חיים בעולם הדיגיטלי",
+      "סילבוס": " This is a course modeled on a \"core curriculum\" comprising foundational texts that provide a comprehensive and shared base of knowledge that enables students to critically examine the role of technology, and by extension, their own role as leaders in the current social, economic, and political context. Like any 'Great Books' course, this course aims to prepare informed and active leaders for the greater good in the digital era. The books we will read in this seminar-style, discussion- based course are both cheerleaders and challengers of technology and business and the classroom discussions of the merits and demerits of the arguments in these books will help students learn about both the impact of technology on business and in society as well as how to mitigate the negative and augment the positive consequences. It will also build students' abilities to analyze topics and construct and articulate arguments. Student Outcomes: Students will be able to: 1.\tAccess the key organization threats 2.\tHave a foundational knowledge on how to build more defensible and resilient organizations that can operate in the current digital landscape 3.\tKnow to exercise ethical decision making with reg",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080134",
+      "שם מקצוע": "יישומי למידת מכונה בעסקים",
+      "סילבוס": "The purpose of this class is to introduce you to fundamental concepts in data science & machine learning (ML) and prepare you for your career path as an entrepreneur or various business roles (e.g. product manager, marketing, operations, consulting…etc) in for-profit & non-profit organizations. This course differs from the classes offered from the engineer side in that we will use a business-centric approach, where we first begin with the business problem to be solved, and then we cover the technical methodologies to solve the context-specific use cases. Throughout the course you will learn a decision-making framework to unite the various disparate use cases under a common thread. You will learn how to use this framework using a mixture of business case studies, real-world context data sets, lectures, and guest speakers.  Student Outcomes: 1.\tCritically analyze foundational texts to evaluate the social, economic, and political impacts of technology and its implications for leadership. 2.\tEngage in seminar-style discussions to assess and articulate arguments about the merits and challenges of technology in business and society. 3.\tDevelop skills to construct and present well-reasone",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1.5",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080135",
+      "שם מקצוע": "ניתוח תמחור וניהול הכנסות",
+      "סילבוס": " The field of Revenue Management (RM) deals with selling a product at the right price, at the right time to the right person. Many industries use revenue management tools to maximize the return on their limited supply of products including e-retail, manufacturing, transportation, entertainment, advertising, etc. For example, e-retailers use RM to decide what assortment of products to show to the customers. Airlines use RM to decide what fare classes should remain open and what fare classes should be closed. Hotels use Revenue management to choose the room rates and to decide how much to overbook. The course will cover different quantitative models in pricing analytics and revenue management including newsvendor models, demand forecasting, network revenue management, choice modeling, assortment optimization, service operations and auctions. We will present ideas and models in the context of different application settings.  Student Outcomes: 1.\tBeing able to articulate the difference between data, insights, and decisions in a business context. 2.\tDemonstrate the ability to use a data-driven making framework and apply real-world inspired data to description, predictive or prescriptive",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080136",
+      "שם מקצוע": "עקרונות סטטיסטיים למדעי הנתונים",
+      "סילבוס": "This course provides an in-depth exploration of data science, tracing its evolution from traditional data analysis to its current role as a critical interdisciplinary field at the intersection of computer science, statistics, and domain expertise. As data science continues to drive innovation across technology, healthcare, and finance, this course emphasizes the importance of not only extracting meaningful insights from complex datasets but also ensuring that these insights are trustworthy and relevant to the specific context in which they are applied. Through the concept of veridical data science, which integrates human judgment and domain knowledge, students will learn to produce data-driven results that are not only accurate but also reliable and ethical, addressing real-world challenges with robust and context-sensitive solutions.  Student Outcomes: 1.\tUnderstand and apply quantitative models in pricing analytics and revenue management, including newsvendor models, demand forecasting, and network revenue management. 2.\tAnalyze and optimize strategies for revenue management in various industries, such as e-retail, transportation, and hospitality. 3.\tDevelop skills to model and s",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080137",
+      "שם מקצוע": "יסודות התוכנה המודרנית",
+      "סילבוס": " This is an introductory course in how software works and what it can do. It covers the basics of programming, databases, and web applications. There is a strong emphasis on learning by doing and the course includes programming assignments in Python every 2-3 weeks. The course will consist of a mix of in person lecture and asynchronous videos and coding assignments.  Student Outcomes: 1.\tThe goal is to provide students with a rigorous perspective on, and a technical toolbox for, the design of better democratic systems. 2.\tTechnical tools will include the axiomatic method, notions of fairness and proportionality, mathematical programming, social welfare functions, measures of power in weighted voting games, and measuring the quality of voting rules through distortion.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "2",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080138",
+      "שם מקצוע": "תכן אלגוריתמים הוגנים",
+      "סילבוס": "Algorithms increasingly guide high-stakes decision-making across many domains. This has potential upsides, since algorithms can improve decision-making, but also serious risks, since recent years have showcased the many ways that algorithms can be biased. This course will teach you principles for designing fair algorithms, emphasizing accessibility to a broad audience via practical takeaways which are directly relevant to the real world through case studies and guest speakers. Case studies will be drawn from diverse settings where algorithms are applied, such as large language models, speech recognition systems, healthcare, criminal justice, sustainability, and education. Students will come away with a strong understanding of how algorithm-related choices can have widespread societal impact.  Student Outcomes: 1.\tWrite code in Python to computationally demonstrate biases in end- to-end algorithmic systems based on choices of data, variables, modeling, and outcomes. 2.\tApply mathematical definitions of fairness to real-world case studies to explain decisions made by both humans and algorithms. 3.\tEnumerate challenges to practitioners in algorithmic-guided decision-making (including",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080139",
+      "שם מקצוע": "בינה מלאכותית עמוקה: נתוני חישוב",
+      "סילבוס": "As industrial competition continues to accelerate AI innovations, this course will focus on the fundamentals of what has made these innovations possible, by investigating the complex roles of data, compute, and algorithms.  Unlike most AI courses which focus only on algorithmic advancement, the course will take a balanced approach and include in our survey the varied ways in which data, data analysis, and human computing has been a key part of the progress, as well as the availability of compute with scalable architectures - all three have played equally important roles in the advancement of AI. Student Outcomes 1.\tTo survey the history of AI from the perspective of how we got to where we are today, large generative models capable of completing tasks that 5 years ago were considered decades off.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080143",
+      "שם מקצוע": "תכן אינטראקציה תלת-מימדית",
+      "סילבוס": "Designing products and experiences for head-mounted displays, often involving novel inputs such as hands and eyes, introduces new challenges for designers when compared to traditional devices and user interfaces. This course presents the theoretical and practical foundations of the field of 3D User Interfaces (3DUIs) and 3D Interaction Design for virtual and augmented reality applications. The course will highlight the differences between 2D and 3D interaction design, introduce design principles, best practices for prototyping, and case studies. Students will be tasked with designing, implementing, and evaluating interaction prototypes of different fidelities for 3DUI tasks such as selection and manipulation, travel, and system control. Product design case studies incorporating head-mounted displays, wearables, and novel input devices will be introduced in the context of 3DUIs.  Student Outcomes 1.\tUnderstand and articulate the principles of model interpretability and explainability in machine learning. 2.\tAnalyze and apply various interpretable modeling techniques, such as prototype-based approaches, sparse linear models, rule-based techniques, and generalized additive models. 3.\t",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080144",
+      "שם מקצוע": "עיצוב משתף בעשייה ספרתית",
+      "סילבוס": " Catalog Description This collaborative workshop brings together graduate students from Cornell Tech and Weill Cornell CTSC to prototype solutions for real- world problems, focusing on the potential of digital fabrication. It introduces key concepts and methods in design, making, and interaction design, equipping participants to address specific needs identified by MakerLAB’s partner organizations through innovative and impactful solutions. Student Outcomes 1.\tIt will provide an introduction to behavioral science theories and approaches to understanding the use of current information technologies, to identify needs that are not currently being met, and to inform the design of future IT. 2.\tIt will introduce students to common research methods and statistical techniques used in the behavioral sciences, with a focus on being able to understand research reports using these methods and statistics. 3.\tIt will provide practice in conducting and reporting behavioral science research",
       "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
       "מסגרת לימודים": "תארים מתקדמים",
       "נקודות": "3",
