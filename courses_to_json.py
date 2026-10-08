@@ -821,7 +821,7 @@ def get_exam_date_time(exam_data: list[dict[str, Any]], exam_category: str):
 
     for exam in sorted(exam_data, key=exam_data_sort_key):
         if exam["CategoryCode"] != exam_category:
-            if exam["CategoryCode"] not in ["FI", "FB", "MI", "M2"]:
+            if exam["CategoryCode"] not in ["FI", "FB", "MI", "M2", "M3"]:
                 raise RuntimeError(f"Invalid category: {exam['CategoryCode']}")
             continue
 
@@ -1047,7 +1047,7 @@ def get_course_full_data(year: int, semester: int, course_number: str):
         "מועד ג": "",  # TODO
         "בוחן מועד א": get_exam_date_time(exam_data, "MI"),
         "בוחן מועד ב": get_exam_date_time(exam_data, "M2"),
-        "בוחן מועד ג": "",  # TODO
+        "בוחן מועד ג": get_exam_date_time(exam_data, "M3"),
         "בוחן מועד ד": "",  # TODO
         "בוחן מועד ה": "",  # TODO
         "בוחן מועד ו": "",  # TODO
