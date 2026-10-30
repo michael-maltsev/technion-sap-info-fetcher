@@ -1199,10 +1199,29 @@ def main():
     if year_and_semester[0] == "last":
         last_semesters = get_last_semesters()
 
-        # Sometimes, only a single old semester is returned for some reason.
+        # The server sometimes returns only a few stale semesters. Reject a short
+        # list, and never regress past the previous output.
+        problems = []
         if len(last_semesters) < 3:
-            raise RuntimeError(
+            problems.append(
                 f"Expected at least 3 semesters, got {len(last_semesters)}"
+            )
+        if args.last_semesters_output_file and last_semesters:
+            prev_path = Path(args.last_semesters_output_file)
+            if prev_path.exists():
+                with prev_path.open(encoding="utf-8") as f:
+                    prev_newest = max((s["year"], s["semester"]) for s in json.load(f))
+                newest = (last_semesters[0]["year"], last_semesters[0]["semester"])
+                if newest < prev_newest:
+                    problems.append(
+                        "Newest semester {}-{} is older than the previous newest"
+                        " semester {}-{}".format(*newest, *prev_newest)
+                    )
+        if problems:
+            fetched = ", ".join(f"{s['year']}-{s['semester']}" for s in last_semesters)
+            raise RuntimeError(
+                f"Unexpected semesters from server: {fetched or 'none'}\n"
+                + "\n".join(f"- {p}" for p in problems)
             )
 
         semester_count = int(year_and_semester[1])
