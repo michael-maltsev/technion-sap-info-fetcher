@@ -14349,7 +14349,7 @@
       "מסגרת לימודים": "תארים מתקדמים",
       "מקצועות קדם": "00460209 או 02340123",
       "נקודות": "2",
-      "אחראים": "ד\"ר יניב (משה) דוד",
+      "אחראים": "ד\"ר משה יניב דוד",
       "הערות": "הרישום לקורס באישור המרצה בלבד, בטופס הבא - \nhttps://docs.google.com/forms/d/e/1FAIpQLSe1gZYN7fGWYnvMnTTwltumb6G9AynNMGyFB_4S11IX1uNU3g/viewform"
     },
     "schedule": [
@@ -14360,7 +14360,7 @@
         "שעה": "10:30 - 12:30",
         "בניין": "הנד. חשמל בלה מאייר",
         "חדר": 352,
-        "מרצה/מתרגל": "ד\"ר יניב (משה) דוד",
+        "מרצה/מתרגל": "ד\"ר משה יניב דוד",
         "מס.": 10
       }
     ]
@@ -46966,7 +46966,7 @@
       "מסגרת לימודים": "מקצוע משותף",
       "מקצועות קדם": "02340123 או 00460209",
       "נקודות": "3",
-      "אחראים": "ד\"ר יניב (משה) דוד",
+      "אחראים": "ד\"ר משה יניב דוד",
       "הערות": "",
       "מועד א": "04-08-2026 13:00 - 16:00",
       "מועד ב": "28-08-2026 09:00 - 12:00"
@@ -46989,7 +46989,7 @@
         "שעה": "10:30 - 12:30",
         "בניין": "טאוב- מדמ\"ח",
         "חדר": 2,
-        "מרצה/מתרגל": "ד\"ר יניב (משה) דוד",
+        "מרצה/מתרגל": "ד\"ר משה יניב דוד",
         "מס.": 10
       },
       {
@@ -47009,7 +47009,7 @@
         "שעה": "10:30 - 12:30",
         "בניין": "טאוב- מדמ\"ח",
         "חדר": 2,
-        "מרצה/מתרגל": "ד\"ר יניב (משה) דוד",
+        "מרצה/מתרגל": "ד\"ר משה יניב דוד",
         "מס.": 10
       },
       {
@@ -47029,7 +47029,7 @@
         "שעה": "10:30 - 12:30",
         "בניין": "טאוב- מדמ\"ח",
         "חדר": 2,
-        "מרצה/מתרגל": "ד\"ר יניב (משה) דוד",
+        "מרצה/מתרגל": "ד\"ר משה יניב דוד",
         "מס.": 10
       }
     ]
@@ -60273,6 +60273,19 @@
       "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
       "מסגרת לימודים": "תארים מתקדמים",
       "נקודות": "3",
+      "אחראים": "",
+      "הערות": ""
+    },
+    "schedule": []
+  },
+  {
+    "general": {
+      "מספר מקצוע": "61080139",
+      "שם מקצוע": "בינה מלאכותית עמוקה: נתוני חישוב",
+      "סילבוס": "As industrial competition continues to accelerate AI innovations, this course will focus on the fundamentals of what has made these innovations possible, by investigating the complex roles of data, compute, and algorithms.  Unlike most AI courses which focus only on algorithmic advancement, the course will take a balanced approach and include in our survey the varied ways in which data, data analysis, and human computing has been a key part of the progress, as well as the availability of compute with scalable architectures - all three have played equally important roles in the advancement of AI. Student Outcomes 1.\tTo survey the history of AI from the perspective of how we got to where we are today, large generative models capable of completing tasks that 5 years ago were considered decades off.",
+      "פקולטה": "מדע יישומי (ג'ייקובס-קורנל)",
+      "מסגרת לימודים": "תארים מתקדמים",
+      "נקודות": "1",
       "אחראים": "",
       "הערות": ""
     },
